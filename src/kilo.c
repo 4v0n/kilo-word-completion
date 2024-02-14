@@ -1,6 +1,37 @@
-#include <unistd.h>
+#include <termios.h>
+#include <unistd.h> 
+
+void enableRawMode() {
+  struct termios raw;
+
+  // read current terminal attributes into struct
+  tcgetattr(STDIN_FILENO, &raw);
+
+  /*
+    disable the ECHO feature
+
+    &= bitwise AND and assignment, ~ bitwise NOT
+
+    c_lflag - local flags (miscellaneous flags)
+    c_iflag - input flags
+    c_oflag - output flags
+    c_cflag - config flags
+  */
+  raw.c_lflag &= ~(ECHO);
+
+  /*
+    write the new terminal attributes
+
+    TCSCAFLUSH specifies when to apply the change
+      waits for all pending output to be written to the terminal
+      also discards any input that hasn't been read
+  */
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+}
 
 int main() {
+  enableRawMode();
+
   /* 
   Read keypresses from user 
 
