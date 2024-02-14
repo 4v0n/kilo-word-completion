@@ -27,15 +27,24 @@ void enableRawMode() {
   struct termios raw = orig_termios; // make copy of original terminal attributes
 
   /*
+    BRKINT - a break condition will cause a terminate signal to be sent to the program
     ICRNL - translates carriage returns inputted by the user into newlines (into 10)
+    INPCK - enables parity checking
+    ISTRIP - causes the 8th bit of each input byte to be stripped
     IXON - allows stopping of transmission of data to terminal and allow resuming with ctrl+s and ctrl+q
   */
-  raw.c_iflag &= ~(ICRNL | IXON); // disable above features
+  raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON); // disable above features
 
   /*
     OPOST - output processing
   */
   raw.c_oflag &= ~(OPOST); // disable above features
+
+
+  /*
+    CS8 - sets the character size to 8 bits per byte
+  */
+  raw.c_lflag |= (CS8); // enable above features
 
   /*
     ECHO - causes each key typed to be printed to terminal
