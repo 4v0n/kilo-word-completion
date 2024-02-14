@@ -1,3 +1,5 @@
+#include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h> 
@@ -54,7 +56,19 @@ int main() {
     read() returns the number of bytes read, and will return 0 when it reaches the end of a file
     This while loop exits when c is 'q', quitting the program
   */
-  while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q');
+  while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q') {
+
+    /*
+      iscntrl(c) tests whether c is a control character
+        Control characters are nonprintable characters
+    */
+    if (iscntrl(c)) {
+      // printf() can print multiple representations of a byte
+      printf("%d\n", c); // %d tells it to format the byte as a decimal number (its ASCII code)
+    } else {
+      printf("%d ('%c')\n", c, c); // output as decimal + %c writes the byte directly, as a character
+    }
+  }
 
   return 0;
 }
