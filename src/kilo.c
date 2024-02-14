@@ -33,6 +33,11 @@ void enableRawMode() {
   raw.c_iflag &= ~(ICRNL | IXON); // disable above features
 
   /*
+    OPOST - output processing
+  */
+  raw.c_oflag &= ~(OPOST); // disable above features
+
+  /*
     ECHO - causes each key typed to be printed to terminal
     ICANON - causes inputs to be read line by line, disabling it makes it read byte by byte
     IEXTEN - terminal waits for another character after ctrl+v
@@ -73,9 +78,9 @@ int main() {
     */
     if (iscntrl(c)) {
       // printf() can print multiple representations of a byte
-      printf("%d\n", c); // %d tells it to format the byte as a decimal number (its ASCII code)
+      printf("%d\r\n", c); // %d tells it to format the byte as a decimal number (its ASCII code)
     } else {
-      printf("%d ('%c')\n", c, c); // output as decimal + %c writes the byte directly, as a character
+      printf("%d ('%c')\r\n", c, c); // output as decimal + %c writes the byte directly, as a character
     }
   }
 
