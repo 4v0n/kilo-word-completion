@@ -28,8 +28,9 @@ void enableRawMode() {
   /*
     ECHO - causes each key typed to be printed to terminal
     ICANON - causes inputs to be read line by line, disabling it makes it read byte by byte
+    ISIG - allows process to be terminated with ctrl+c (SIGINT) and suspended with ctrl+z (SIGTSTP)
   */
-  raw.c_lflag &= ~(ECHO | ICANON);
+  raw.c_lflag &= ~(ECHO | ICANON | ISIG); // disable above features
 
   /*
     write the new terminal attributes
