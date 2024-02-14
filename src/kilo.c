@@ -13,7 +13,7 @@ void enableRawMode() {
   atexit(disableRawMode); // register disableRawMode() to be called on program exit
 
   /*
-    disable the ECHO feature
+    disable terminal features
 
     &= bitwise AND and assignment, ~ bitwise NOT
 
@@ -22,8 +22,12 @@ void enableRawMode() {
     c_oflag - output flags
     c_cflag - config flags
   */
- struct termios raw = orig_termios; // make copy of original terminal attributes
-  raw.c_lflag &= ~(ECHO);
+  struct termios raw = orig_termios; // make copy of original terminal attributes
+  /*
+    ECHO - causes each key typed to be printed to terminal
+    ICANON - causes inputs to be read line by line, disabling it makes it read byte by byte
+  */
+  raw.c_lflag &= ~(ECHO | ICANON);
 
   /*
     write the new terminal attributes
