@@ -25,12 +25,19 @@ void enableRawMode() {
     c_cflag - config flags
   */
   struct termios raw = orig_termios; // make copy of original terminal attributes
+
+  /*
+    IXON - allows stopping of transmission of data to terminal and allow resuming with ctrl+s and ctrl+q
+  */
+  raw.c_iflag &= ~(IXON); // disable above features
+
   /*
     ECHO - causes each key typed to be printed to terminal
     ICANON - causes inputs to be read line by line, disabling it makes it read byte by byte
+    IEXTEN - terminal waits for another character after ctrl+v
     ISIG - allows process to be terminated with ctrl+c (SIGINT) and suspended with ctrl+z (SIGTSTP)
   */
-  raw.c_lflag &= ~(ECHO | ICANON | ISIG); // disable above features
+  raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG); // disable above features
 
   /*
     write the new terminal attributes
