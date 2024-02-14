@@ -27,9 +27,10 @@ void enableRawMode() {
   struct termios raw = orig_termios; // make copy of original terminal attributes
 
   /*
+    ICRNL - translates carriage returns inputted by the user into newlines (into 10)
     IXON - allows stopping of transmission of data to terminal and allow resuming with ctrl+s and ctrl+q
   */
-  raw.c_iflag &= ~(IXON); // disable above features
+  raw.c_iflag &= ~(ICRNL | IXON); // disable above features
 
   /*
     ECHO - causes each key typed to be printed to terminal
