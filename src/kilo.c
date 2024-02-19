@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
@@ -6,12 +7,20 @@
 
 struct termios orig_termios;
 
+// Prints an error message and exits the program
+void die(const char *s) {
+  perror(s); // prints a descriptive error message 
+  exit(1); // exit program with status 1 - indicate failure
+}
+
 void disableRawMode() {
-  tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+  if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1)
+    die("tcsetattr");
 }
 
 void enableRawMode() {
-  tcgetattr(STDIN_FILENO, &orig_termios); // read current terminal attributes into struct
+  if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) // read current terminal attributes into struct
+    die("tcgetattr");
   atexit(disableRawMode); // register disableRawMode() to be called on program exit
 
   /*
@@ -69,7 +78,8 @@ void enableRawMode() {
       waits for all pending output to be written to the terminal
       also discards any input that hasn't been read
   */
-  tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+  if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
+    die("tcsetattr");
 }
 
 int main() {
@@ -79,7 +89,8 @@ int main() {
   while (1) {
 
     char c = '\0'; // initialise c to null character
-    read(STDIN_FILENO, &c, 1); // read 1 byte from standard input into char c
+    if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) // read 1 byte from standard input into char c
+      die("read");
 
     /*
       iscntrl(c) tests whether c is a control character
