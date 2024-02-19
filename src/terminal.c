@@ -1,10 +1,10 @@
-#include <ctype.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
+/*** includes ***/
+#include <unistd.h>
 #include <termios.h>
-#include <unistd.h> 
+#include <stdlib.h>
+#include <stdio.h>
 
+/*** data ***/
 struct termios orig_termios;
 
 // Prints an error message and exits the program
@@ -80,30 +80,4 @@ void enableRawMode() {
   */
   if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
     die("tcsetattr");
-}
-
-int main() {
-  enableRawMode();
-
-  // while the program is running
-  while (1) {
-
-    char c = '\0'; // initialise c to null character
-    if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) // read 1 byte from standard input into char c
-      die("read");
-
-    /*
-      iscntrl(c) tests whether c is a control character
-        Control characters are nonprintable characters
-    */
-    if (iscntrl(c)) {
-      // printf() can print multiple representations of a byte
-      printf("%d\r\n", c); // %d tells it to format the byte as a decimal number (its ASCII code)
-    } else {
-      printf("%d ('%c')\r\n", c, c); // output as decimal + %c writes the byte directly, as a character
-    }
-    if (c == 'q') break;
-  }
-
-  return 0;
 }

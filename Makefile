@@ -1,2 +1,2 @@
-kilo: src/kilo.c
-	$(CC) src/kilo.c -o build/kilo -Wall -Wextra -pedantic -std=c99
+main: src/main.c
+	$(CC) src/main.c src/terminal.c -o build/main -Wall -Wextra -pedantic -std=c99 -Iinclude
