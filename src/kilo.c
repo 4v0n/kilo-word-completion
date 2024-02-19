@@ -55,6 +55,14 @@ void enableRawMode() {
   raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG); // disable above features
 
   /*
+  c_cc - control characters
+  VMIN - minimum number of bytes of input needed before read() can return
+  VTIME - maximum amount of time to wait before read() returns in (1/10s)
+  */
+  raw.c_cc[VMIN] = 0; // set VMIN to 0 so read() returns as soon as there is any input to be read
+  raw.c_cc[VTIME] = 1; // set VTIME to 1 to make read return every 100ms (10Hz)
+
+  /*
     write the new terminal attributes
 
     TCSCAFLUSH specifies when to apply the change
@@ -67,19 +75,11 @@ void enableRawMode() {
 int main() {
   enableRawMode();
 
-  /* 
-  Read keypresses from user 
+  // while the program is running
+  while (1) {
 
-  When running, the terminal is hooked to the standard input
-  Keyboard inputs will be read into the c variable
-  */
-  char c;
-  /*
-    read() reads 1 byte from the standard input into the variable, c until there are no more bytes to read
-    read() returns the number of bytes read, and will return 0 when it reaches the end of a file
-    This while loop exits when c is 'q', quitting the program
-  */
-  while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q') {
+    char c = '\0'; // initialise c to null character
+    read(STDIN_FILENO, &c, 1); // read 1 byte from standard input into char c
 
     /*
       iscntrl(c) tests whether c is a control character
@@ -91,6 +91,7 @@ int main() {
     } else {
       printf("%d ('%c')\r\n", c, c); // output as decimal + %c writes the byte directly, as a character
     }
+    if (c == 'q') break;
   }
 
   return 0;
