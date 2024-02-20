@@ -3,6 +3,7 @@
 #include <termios.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
 
 /*** data ***/
 struct termios orig_termios;
@@ -10,17 +11,20 @@ struct termios orig_termios;
 /*** functions ***/
 
 // Prints an error message and exits the program
-void die(const char *s) {
-  perror(s); // prints a descriptive error message 
-  exit(1); // exit program with status 1 - indicate failure
+void die(const char *s)
+{
+  perror(s); // prints a descriptive error message
+  exit(1);   // exit program with status 1 - indicate failure
 }
 
-void disableRawMode() {
+void disableRawMode()
+{
   if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1)
     die("tcsetattr");
 }
 
-void enableRawMode() {
+void enableRawMode()
+{
   if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) // read current terminal attributes into struct
     die("tcgetattr");
   atexit(disableRawMode); // register disableRawMode() to be called on program exit
@@ -51,7 +55,6 @@ void enableRawMode() {
   */
   raw.c_oflag &= ~(OPOST); // disable above features
 
-
   /*
     CS8 - sets the character size to 8 bits per byte
   */
@@ -70,7 +73,7 @@ void enableRawMode() {
   VMIN - minimum number of bytes of input needed before read() can return
   VTIME - maximum amount of time to wait before read() returns in (1/10s)
   */
-  raw.c_cc[VMIN] = 0; // set VMIN to 0 so read() returns as soon as there is any input to be read
+  raw.c_cc[VMIN] = 0;  // set VMIN to 0 so read() returns as soon as there is any input to be read
   raw.c_cc[VTIME] = 1; // set VTIME to 1 to make read return every 100ms (10Hz)
 
   /*
@@ -82,4 +85,17 @@ void enableRawMode() {
   */
   if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
     die("tcsetattr");
+}
+
+// Waits for a key input and returns it
+char editorReadKey()
+{
+  int nread;
+  char c;
+  while ((nread = read(STDIN_FILENO, &c, 1)) != 1)
+  {
+    if (nread == -1 && errno != EAGAIN)
+      die("read");
+  }
+  return c;
 }

@@ -4,5 +4,6 @@
 void die(const char *s);
 void disableRawMode();
 void enableRawMode();
+char editorReadKey();
 
 #endif
