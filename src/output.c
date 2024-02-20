@@ -1,6 +1,5 @@
 #include <unistd.h>
 
-// Clear the terminal screen
 void editorRefreshScreen()
 {
   write(STDOUT_FILENO, "\x1b[2J", 4); // clear terminal

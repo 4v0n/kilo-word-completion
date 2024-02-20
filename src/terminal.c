@@ -13,6 +13,10 @@ struct termios orig_termios;
 // Prints an error message and exits the program
 void die(const char *s)
 {
+  // clear screen and reposition cursor on exit
+  write(STDOUT_FILENO, "\x1b[2J", 4);
+  write(STDOUT_FILENO, "\x1b[H", 3);
+
   perror(s); // prints a descriptive error message
   exit(1);   // exit program with status 1 - indicate failure
 }
