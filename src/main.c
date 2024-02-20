@@ -1,6 +1,7 @@
 /*** includes ***/
 #include <terminal.h>
 #include <input.h>
+#include <output.h>
 
 #include <ctype.h>
 #include<stdio.h>
@@ -13,6 +14,7 @@ int main() {
 
   // while the program is running
   while (1) {
+    editorRefreshScreen();
     editorProcessKeypress();
   }
 
