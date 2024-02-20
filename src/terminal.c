@@ -6,7 +6,11 @@
 #include <errno.h>
 
 /*** data ***/
-struct termios orig_termios;
+struct editorConfig {
+  struct termios orig_termios;
+};
+
+struct editorConfig E;
 
 /*** functions ***/
 
@@ -23,13 +27,13 @@ void die(const char *s)
 
 void disableRawMode()
 {
-  if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1)
+  if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.orig_termios) == -1)
     die("tcsetattr");
 }
 
 void enableRawMode()
 {
-  if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) // read current terminal attributes into struct
+  if (tcgetattr(STDIN_FILENO, &E.orig_termios) == -1) // read current terminal attributes into struct
     die("tcgetattr");
   atexit(disableRawMode); // register disableRawMode() to be called on program exit
 
@@ -43,7 +47,7 @@ void enableRawMode()
     c_oflag - output flags
     c_cflag - config flags
   */
-  struct termios raw = orig_termios; // make copy of original terminal attributes
+  struct termios raw = E.orig_termios; // make copy of original terminal attributes
 
   /*
     BRKINT - a break condition will cause a terminate signal to be sent to the program
