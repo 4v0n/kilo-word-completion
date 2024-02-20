@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <errno.h>
 
+/*** defines ***/
+#define CTRL_KEY(k) ((k) & 0x1f) // bitwise AND character with 00011111
 
 /*** init ***/
 int main() {
@@ -28,7 +30,9 @@ int main() {
     } else {
       printf("%d ('%c')\r\n", c, c); // output as decimal + %c writes the byte directly, as a character
     }
-    if (c == 'q') break;
+    
+    if (c == CTRL_KEY('q')) break;
+
   }
 
   return 0;

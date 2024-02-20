@@ -7,6 +7,8 @@
 /*** data ***/
 struct termios orig_termios;
 
+/*** functions ***/
+
 // Prints an error message and exits the program
 void die(const char *s) {
   perror(s); // prints a descriptive error message 
