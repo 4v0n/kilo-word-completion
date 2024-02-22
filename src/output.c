@@ -1,10 +1,12 @@
 #include <unistd.h>
+#include <terminal.h>
 
 // Draw a column of tildes on the left side of the screen
 void editorDrawRows()
 {
   int y;
-  for (y = 0; y < 24; y++) { // draw 24 rows (placeholder for size of terminal)
+  struct editorConfig *E = getEditorConfig();
+  for (y = 0; y < E->screenrows; y++) { // draw 24 rows (placeholder for size of terminal)
     write(STDOUT_FILENO, "~\r\n", 3);
   }
 }

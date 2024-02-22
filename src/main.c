@@ -11,6 +11,7 @@
 /*** init ***/
 int main() {
   enableRawMode();
+  initEditor();
 
   // while the program is running
   while (1) {
