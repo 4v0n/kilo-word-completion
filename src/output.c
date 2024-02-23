@@ -58,12 +58,14 @@ void editorRefreshScreen()
 {
   struct abuf ab = ABUF_INIT; // create new append buffer
 
+  abAppend(&ab, "\x1b[?25l", 6); // hide cursor
   abAppend(&ab, "\x1b[2J", 4); // clear terminal
   abAppend(&ab, "\x1b[H", 3);  // reposition cursor
 
   editorDrawRows(&ab); 
 
   abAppend(&ab, "\x1b[H", 3); // reposition cursor
+  abAppend(&ab, "\x1b[?25h", 6); // show cursor
 
   write(STDOUT_FILENO, ab.b, ab.len); // write buffer to standard output
   abFree(&ab); // free buffer
