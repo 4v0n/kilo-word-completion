@@ -4,8 +4,9 @@
 #include <termios.h>
 
 struct editorConfig {
-  int screenrows;
-  int screencols;
+  int cx, cy; // x - horizontal coordinate of cursor, y - vertical
+  int screenrows; // no rows in terminal
+  int screencols; // no columns in terminal
   struct termios orig_termios;
 };
 

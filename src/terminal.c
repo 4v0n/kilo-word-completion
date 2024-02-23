@@ -8,8 +8,9 @@
 
 /*** data ***/
 struct editorConfig {
-  int screenrows;
-  int screencols;
+  int cx, cy; // x - horizontal coordinate of cursor, y - vertical
+  int screenrows; // no rows in terminal
+  int screencols; // no columns in terminal
   struct termios orig_termios;
 };
 
@@ -155,6 +156,9 @@ int getWindowSize(int *rows, int *cols) {
 
 // Initialise fields of the global editorConfig
 void initEditor() {
+  E.cx = 0;
+  E.cy = 0;
+
   if (getWindowSize(&E.screenrows, &E.screencols) == -1)
     die("getWindowSize");
 }
