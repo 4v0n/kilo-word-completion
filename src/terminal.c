@@ -1,5 +1,6 @@
 /*** includes ***/
 #include <errno.h>
+#include <settings.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
@@ -8,7 +9,7 @@
 
 /*** data ***/
 struct editorConfig {
-  int cx, cy; // x - horizontal coordinate of cursor, y - vertical
+  int cx, cy;     // x - horizontal coordinate of cursor, y - vertical
   int screenrows; // no rows in terminal
   int screencols; // no columns in terminal
   struct termios orig_termios;
@@ -105,14 +106,38 @@ void enableRawMode() {
 }
 
 // Waits for a key input and returns it
-char editorReadKey() {
+int editorReadKey() {
   int nread;
   char c;
   while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
     if (nread == -1 && errno != EAGAIN)
       die("read");
   }
-  return c;
+
+  if (c == '\x1b') {
+    char seq[3];
+
+    if (read(STDIN_FILENO, &seq[0], 1) != 1)
+      return '\x1b';
+    if (read(STDIN_FILENO, &seq[1], 1) != 1)
+      return '\x1b';
+
+    if (seq[0] == '[') {
+      switch (seq[1]) {
+      case 'A':
+        return ARROW_UP;
+      case 'B':
+        return ARROW_DOWN;
+      case 'C':
+        return ARROW_RIGHT;
+      case 'D':
+        return ARROW_LEFT;
+      }
+    }
+    return '\x1b';
+  } else {
+    return c;
+  }
 }
 
 // returns the position of the cursor

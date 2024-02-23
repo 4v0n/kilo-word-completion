@@ -14,7 +14,7 @@ struct editorConfig *getEditorConfig();
 void die(const char *s);
 void disableRawMode();
 void enableRawMode();
-char editorReadKey();
+int editorReadKey();
 int getCursorPosition(int *rows, int *cols);
 int getWindowSize(int *rows, int *cols);
 void initEditor();

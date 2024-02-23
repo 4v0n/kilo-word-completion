@@ -1,3 +1,4 @@
+#include <settings.h>
 #include <stdlib.h>
 #include <terminal.h>
 #include <unistd.h>
@@ -7,20 +8,20 @@
 
 /*** functions ***/
 
-void editorMoveCursor(char key) {
+void editorMoveCursor(int key) {
   struct editorConfig *E = getEditorConfig();
 
   switch (key) {
-  case 'a':
+  case ARROW_LEFT:
     E->cx--;
     break;
-  case 'd':
+  case ARROW_RIGHT:
     E->cx++;
     break;
-  case 'w':
+  case ARROW_UP:
     E->cy--;
     break;
-  case 's':
+  case ARROW_DOWN:
     E->cy++;
     break;
   }
@@ -28,7 +29,7 @@ void editorMoveCursor(char key) {
 
 // Waits for a keypress and handles it
 void editorProcessKeypress() {
-  char c = editorReadKey();
+  int c = editorReadKey();
 
   switch (c) {
   case CTRL_KEY('q'): // quit program
@@ -38,10 +39,10 @@ void editorProcessKeypress() {
     exit(0);
     break;
 
-  case 'w':
-  case 's':
-  case 'a':
-  case 'd':
+  case ARROW_UP:
+  case ARROW_DOWN:
+  case ARROW_LEFT:
+  case ARROW_RIGHT:
     editorMoveCursor(c);
     break;
   }
