@@ -1,5 +1,5 @@
-#include <terminal.h>
 #include <stdlib.h>
+#include <terminal.h>
 #include <unistd.h>
 
 /*** defines ***/
@@ -8,12 +8,10 @@
 /*** functions ***/
 
 // Waits for a keypress and handles it
-void editorProcessKeypress()
-{
+void editorProcessKeypress() {
   char c = editorReadKey();
 
-  switch (c)
-  {
+  switch (c) {
   case CTRL_KEY('q'): // quit program
     // clear screen and reposition cursor on quit
     write(STDOUT_FILENO, "\x1b[2J", 4);

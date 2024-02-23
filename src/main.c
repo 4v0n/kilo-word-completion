@@ -1,12 +1,12 @@
 /*** includes ***/
-#include <terminal.h>
 #include <input.h>
 #include <output.h>
+#include <terminal.h>
 
 #include <ctype.h>
-#include<stdio.h>
-#include <unistd.h>
 #include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
 
 /*** init ***/
 int main() {

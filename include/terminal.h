@@ -9,7 +9,7 @@ struct editorConfig {
   struct termios orig_termios;
 };
 
-struct editorConfig* getEditorConfig();
+struct editorConfig *getEditorConfig();
 void die(const char *s);
 void disableRawMode();
 void enableRawMode();

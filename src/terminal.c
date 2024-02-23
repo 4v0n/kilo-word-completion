@@ -1,14 +1,13 @@
 /*** includes ***/
-#include <unistd.h>
-#include <termios.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/ioctl.h>
+#include <termios.h>
+#include <unistd.h>
 
 /*** data ***/
-struct editorConfig
-{
+struct editorConfig {
   int screenrows;
   int screencols;
   struct termios orig_termios;
@@ -18,14 +17,10 @@ struct editorConfig E;
 
 /*** functions ***/
 
-struct editorConfig *getEditorConfig()
-{
-  return &E;
-}
+struct editorConfig *getEditorConfig() { return &E; }
 
 // Prints an error message and exits the program
-void die(const char *s)
-{
+void die(const char *s) {
   // clear screen and reposition cursor on exit
   write(STDOUT_FILENO, "\x1b[2J", 4);
   write(STDOUT_FILENO, "\x1b[H", 3);
@@ -34,17 +29,17 @@ void die(const char *s)
   exit(1);   // exit program with status 1 - indicate failure
 }
 
-void disableRawMode()
-{
+void disableRawMode() {
   if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.orig_termios) == -1)
     die("tcsetattr");
 }
 
-void enableRawMode()
-{
-  if (tcgetattr(STDIN_FILENO, &E.orig_termios) == -1) // read current terminal attributes into struct
+void enableRawMode() {
+  if (tcgetattr(STDIN_FILENO, &E.orig_termios) ==
+      -1) // read current terminal attributes into struct
     die("tcgetattr");
-  atexit(disableRawMode); // register disableRawMode() to be called on program exit
+  atexit(
+      disableRawMode); // register disableRawMode() to be called on program exit
 
   /*
     disable terminal features
@@ -56,16 +51,18 @@ void enableRawMode()
     c_oflag - output flags
     c_cflag - config flags
   */
-  struct termios raw = E.orig_termios; // make copy of original terminal attributes
+  struct termios raw =
+      E.orig_termios; // make copy of original terminal attributes
 
   /*
-    BRKINT - a break condition will cause a terminate signal to be sent to the program
-    ICRNL - translates carriage returns inputted by the user into newlines (into 10)
-    INPCK - enables parity checking
-    ISTRIP - causes the 8th bit of each input byte to be stripped
-    IXON - allows stopping of transmission of data to terminal and allow resuming with ctrl+s and ctrl+q
+    BRKINT - a break condition will cause a terminate signal to be sent to the
+    program ICRNL - translates carriage returns inputted by the user into
+    newlines (into 10) INPCK - enables parity checking ISTRIP - causes the 8th
+    bit of each input byte to be stripped IXON - allows stopping of transmission
+    of data to terminal and allow resuming with ctrl+s and ctrl+q
   */
-  raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON); // disable above features
+  raw.c_iflag &=
+      ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON); // disable above features
 
   /*
     OPOST - output processing
@@ -79,9 +76,10 @@ void enableRawMode()
 
   /*
     ECHO - causes each key typed to be printed to terminal
-    ICANON - causes inputs to be read line by line, disabling it makes it read byte by byte
-    IEXTEN - terminal waits for another character after ctrl+v
-    ISIG - allows process to be terminated with ctrl+c (SIGINT) and suspended with ctrl+z (SIGTSTP)
+    ICANON - causes inputs to be read line by line, disabling it makes it read
+    byte by byte IEXTEN - terminal waits for another character after ctrl+v ISIG
+    - allows process to be terminated with ctrl+c (SIGINT) and suspended with
+    ctrl+z (SIGTSTP)
   */
   raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG); // disable above features
 
@@ -90,7 +88,8 @@ void enableRawMode()
   VMIN - minimum number of bytes of input needed before read() can return
   VTIME - maximum amount of time to wait before read() returns in (1/10s)
   */
-  raw.c_cc[VMIN] = 0;  // set VMIN to 0 so read() returns as soon as there is any input to be read
+  raw.c_cc[VMIN] = 0; // set VMIN to 0 so read() returns as soon as there is any
+                      // input to be read
   raw.c_cc[VTIME] = 1; // set VTIME to 1 to make read return every 100ms (10Hz)
 
   /*
@@ -105,12 +104,10 @@ void enableRawMode()
 }
 
 // Waits for a key input and returns it
-char editorReadKey()
-{
+char editorReadKey() {
   int nread;
   char c;
-  while ((nread = read(STDIN_FILENO, &c, 1)) != 1)
-  {
+  while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
     if (nread == -1 && errno != EAGAIN)
       die("read");
   }
@@ -118,14 +115,12 @@ char editorReadKey()
 }
 
 // returns the position of the cursor
-int getCursorPosition(int *rows, int *cols)
-{
+int getCursorPosition(int *rows, int *cols) {
   char buf[32];
   unsigned int i = 0;
   if (write(STDOUT_FILENO, "\x1b[6n", 4) != 4)
     return -1;
-  while (i < sizeof(buf) - 1)
-  {
+  while (i < sizeof(buf) - 1) {
     if (read(STDIN_FILENO, &buf[i], 1) != 1)
       break;
     if (buf[i] == 'R')
@@ -140,20 +135,18 @@ int getCursorPosition(int *rows, int *cols)
   return 0;
 }
 
-int getWindowSize(int *rows, int *cols)
-{
+int getWindowSize(int *rows, int *cols) {
   struct winsize ws;
 
-  // ioctl reads the number of columns and rows in the terminal into the ws struct
-  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0)
-  {
-    // position cursor at bottom right, then read position to get columns and rows
+  // ioctl reads the number of columns and rows in the terminal into the ws
+  // struct
+  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
+    // position cursor at bottom right, then read position to get columns and
+    // rows
     if (write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12)
       return -1;
     return getCursorPosition(rows, cols);
-  }
-  else
-  {
+  } else {
     *cols = ws.ws_col;
     *rows = ws.ws_row;
     return 0;
@@ -161,8 +154,7 @@ int getWindowSize(int *rows, int *cols)
 }
 
 // Initialise fields of the global editorConfig
-void initEditor()
-{
+void initEditor() {
   if (getWindowSize(&E.screenrows, &E.screencols) == -1)
     die("getWindowSize");
 }
