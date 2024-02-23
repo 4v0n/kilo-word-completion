@@ -46,6 +46,7 @@ void editorDrawRows(struct abuf *ab)
   {
     abAppend(ab, "~", 1);
 
+    abAppend(ab, "\x1b[K", 3); // clear line
     if (y < E->screenrows - 1)
     {
       abAppend(ab, "\r\n", 2);
@@ -59,7 +60,6 @@ void editorRefreshScreen()
   struct abuf ab = ABUF_INIT; // create new append buffer
 
   abAppend(&ab, "\x1b[?25l", 6); // hide cursor
-  abAppend(&ab, "\x1b[2J", 4); // clear terminal
   abAppend(&ab, "\x1b[H", 3);  // reposition cursor
 
   editorDrawRows(&ab); 
