@@ -9,6 +9,8 @@ enum editorKey {
   ARROW_RIGHT, // 1001
   ARROW_UP, // 1002 ...
   ARROW_DOWN,
+  HOME_KEY,
+  END_KEY,
   PAGE_UP,
   PAGE_DOWN
 };
