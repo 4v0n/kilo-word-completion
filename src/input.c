@@ -38,6 +38,7 @@ void editorMoveCursor(int key) {
 // Waits for a keypress and handles it
 void editorProcessKeypress() {
   int c = editorReadKey();
+  struct editorConfig *E = getEditorConfig();
 
   switch (c) {
   case CTRL_KEY('q'): // quit program
@@ -45,6 +46,16 @@ void editorProcessKeypress() {
     write(STDOUT_FILENO, "\x1b[2J", 4);
     write(STDOUT_FILENO, "\x1b[H", 3);
     exit(0);
+    break;
+
+  case PAGE_UP:
+  case PAGE_DOWN:
+    {
+      int times = E->screenrows;
+      while (times--)
+        // arrow up or arrow down until bottom/top of terminal
+        editorMoveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
+    }
     break;
 
   case ARROW_UP:

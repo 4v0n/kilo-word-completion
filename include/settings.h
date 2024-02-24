@@ -6,9 +6,11 @@
 //keybinds
 enum editorKey {
   ARROW_LEFT = 1000,
-  ARROW_RIGHT,
-  ARROW_UP,
-  ARROW_DOWN
+  ARROW_RIGHT, // 1001
+  ARROW_UP, // 1002 ...
+  ARROW_DOWN,
+  PAGE_UP,
+  PAGE_DOWN
 };
 
 #endif
