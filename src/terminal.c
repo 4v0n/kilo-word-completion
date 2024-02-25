@@ -8,10 +8,17 @@
 #include <unistd.h>
 
 /*** data ***/
+typedef struct erow { // editor row
+  int size;
+  char *chars;
+} erow;
+
 struct editorConfig {
   int cx, cy;     // x - horizontal coordinate of cursor, y - vertical
   int screenrows; // no rows in terminal
   int screencols; // no columns in terminal
+  int numrows;
+  erow row;
   struct termios orig_termios;
 };
 
@@ -163,10 +170,10 @@ int editorReadKey() {
       }
     } else if (seq[0] == '0') {
       switch (seq[1]) {
-        case 'H':
-          return HOME_KEY;
-        case 'F':
-          return END_KEY;
+      case 'H':
+        return HOME_KEY;
+      case 'F':
+        return END_KEY;
       }
     }
 

@@ -43,23 +43,30 @@ void editorDrawRows(struct abuf *ab) {
   struct editorConfig *E = getEditorConfig();
 
   for (y = 0; y < E->screenrows; y++) {
-    if (y == E->screenrows / 3) {
-      // print editor version on 3rd row
-      char welcome[80];
-      int welcomelen = snprintf(welcome, sizeof(welcome),
-                                "Kilo editor -- version %s", VERSION);
-      if (welcomelen > E->screencols)
-        welcomelen = E->screencols;
-      int padding = (E->screencols - welcomelen) / 2;
-      if (padding) {
+    if (y >= E->numrows) {
+      if (E->numrows == 0 && y == E->screenrows / 3) {
+        // print editor version on 3rd row
+        char welcome[80];
+        int welcomelen = snprintf(welcome, sizeof(welcome),
+                                  "Kilo editor -- version %s", VERSION);
+        if (welcomelen > E->screencols)
+          welcomelen = E->screencols;
+        int padding = (E->screencols - welcomelen) / 2;
+        if (padding) {
+          abAppend(ab, "~", 1);
+          padding--;
+        }
+        while (padding--)
+          abAppend(ab, " ", 1);
+        abAppend(ab, welcome, welcomelen);
+      } else {
         abAppend(ab, "~", 1);
-        padding--;
       }
-      while (padding--)
-        abAppend(ab, " ", 1);
-      abAppend(ab, welcome, welcomelen);
     } else {
-      abAppend(ab, "~", 1);
+      int len = E->row.size;
+      if (len > E->screencols)
+        len = E->screencols;
+      abAppend(ab, E->row.chars, len);
     }
 
     abAppend(ab, "\x1b[K", 3); // clear line
@@ -79,7 +86,7 @@ void editorRefreshScreen() {
 
   editorDrawRows(&ab);
 
-  // position cursor 
+  // position cursor
   char buf[32];
   snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E->cy + 1, E->cx + 1);
   abAppend(&ab, buf, strlen(buf));
