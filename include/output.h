@@ -1,10 +1,7 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
-struct abuf {
-  char *b;
-  int len;
-};
+#include <data.h>
 
 // append buffer
 void abAppend(struct abuf *ab, const char *s, int len);

@@ -1,16 +1,9 @@
-#include <settings.h>
+#include <data.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <terminal.h>
 #include <unistd.h>
-
-/*** append buffer ***/
-
-struct abuf {
-  char *b; // buffer
-  int len; // length
-};
 
 // empty buffer - constructor for abuf type
 #define ABUF_INIT {NULL, 0};

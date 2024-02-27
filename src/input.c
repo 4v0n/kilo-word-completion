@@ -1,4 +1,4 @@
-#include <settings.h>
+#include <data.h>
 #include <stdlib.h>
 #include <terminal.h>
 #include <unistd.h>
