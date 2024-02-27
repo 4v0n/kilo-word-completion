@@ -35,6 +35,12 @@ void editorMoveCursor(int key) {
     }
     break;
   }
+
+  row = (E->cy >= E->numrows) ? NULL : &E->row[E->cy];
+  int rowlen = row ? row->size : 0;
+  if (E->cx > rowlen) {
+    E->cx = rowlen;
+  }
 }
 
 // Waits for a keypress and handles it
