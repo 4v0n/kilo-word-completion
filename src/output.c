@@ -30,13 +30,26 @@ void abFree(struct abuf *ab) {
 
 /*** output ***/
 
+// scrolls the editor vertically when the cursor goes out of bounds
+void editorScroll() {
+  struct editorConfig *E = getEditorConfig();
+
+  if (E->cy < E->rowoff) {
+    E->rowoff = E->cy;
+  }
+  if (E->cy >= E->rowoff + E->screenrows) {
+    E->rowoff = E->cy - E->screenrows + 1;
+  }
+}
+
 // Draw a column of tildes on the left side of the screen
 void editorDrawRows(struct abuf *ab) {
   int y;
   struct editorConfig *E = getEditorConfig();
 
   for (y = 0; y < E->screenrows; y++) {
-    if (y >= E->numrows) {
+    int filerow = y + E->rowoff;
+    if (filerow >= E->numrows) {
       if (E->numrows == 0 && y == E->screenrows / 3) {
         // print editor version on 3rd row
         char welcome[80];
@@ -56,10 +69,10 @@ void editorDrawRows(struct abuf *ab) {
         abAppend(ab, "~", 1);
       }
     } else {
-      int len = E->row[y].size;
+      int len = E->row[filerow].size;
       if (len > E->screencols)
         len = E->screencols;
-      abAppend(ab, E->row[y].chars, len);
+      abAppend(ab, E->row[filerow].chars, len);
     }
 
     abAppend(ab, "\x1b[K", 3); // clear line
@@ -71,6 +84,8 @@ void editorDrawRows(struct abuf *ab) {
 
 // Draws each row of the buffer of text being edited
 void editorRefreshScreen() {
+  editorScroll();
+
   struct editorConfig *E = getEditorConfig();
   struct abuf ab = ABUF_INIT; // create new append buffer
 
@@ -81,7 +96,7 @@ void editorRefreshScreen() {
 
   // position cursor
   char buf[32];
-  snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E->cy + 1, E->cx + 1);
+  snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E->cy - E->rowoff) + 1, E->cx + 1);
   abAppend(&ab, buf, strlen(buf));
 
   abAppend(&ab, "\x1b[?25h", 6); // show cursor

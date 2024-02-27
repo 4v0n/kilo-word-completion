@@ -211,6 +211,7 @@ int getWindowSize(int *rows, int *cols) {
 void initEditor() {
   E.cx = 0;
   E.cy = 0;
+  E.rowoff = 0;
   E.numrows = 0;
   E.row = NULL;
 
