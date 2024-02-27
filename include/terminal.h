@@ -13,7 +13,7 @@ struct editorConfig {
   int screenrows; // no rows in terminal
   int screencols; // no columns in terminal
   int numrows;
-  erow row;
+  erow *row;
   struct termios orig_termios;
 };
 

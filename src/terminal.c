@@ -18,7 +18,7 @@ struct editorConfig {
   int screenrows; // no rows in terminal
   int screencols; // no columns in terminal
   int numrows;
-  erow row;
+  erow *row;
   struct termios orig_termios;
 };
 
@@ -226,6 +226,8 @@ int getWindowSize(int *rows, int *cols) {
 void initEditor() {
   E.cx = 0;
   E.cy = 0;
+  E.numrows = 0;
+  E.row = NULL;
 
   if (getWindowSize(&E.screenrows, &E.screencols) == -1)
     die("getWindowSize");
