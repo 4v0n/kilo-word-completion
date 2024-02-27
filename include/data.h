@@ -3,14 +3,14 @@
 
 #include <termios.h>
 
-//defines
+// defines
 #define VERSION "0.0.1"
 
-//keybinds
+// keybinds
 enum editorKey {
   ARROW_LEFT = 1000,
   ARROW_RIGHT, // 1001
-  ARROW_UP, // 1002 ...
+  ARROW_UP,    // 1002 ...
   ARROW_DOWN,
   DEL_KEY,
   HOME_KEY,
@@ -19,7 +19,7 @@ enum editorKey {
   PAGE_DOWN
 };
 
-//structs
+// structs
 struct abuf { // append buffer
   char *b;
   int len;

@@ -79,8 +79,10 @@ void editorDrawRows(struct abuf *ab) {
       }
     } else {
       int len = E->row[filerow].size - E->coloff;
-      if (len < 0) len = 0;
-      if (len > E->screencols) len = E->screencols;
+      if (len < 0)
+        len = 0;
+      if (len > E->screencols)
+        len = E->screencols;
       abAppend(ab, &E->row[filerow].chars[E->coloff], len);
     }
 
@@ -105,7 +107,8 @@ void editorRefreshScreen() {
 
   // position cursor
   char buf[32];
-  snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E->cy - E->rowoff) + 1, (E->cx - E->coloff) + 1);
+  snprintf(buf, sizeof(buf), "\x1b[%d;%dH", (E->cy - E->rowoff) + 1,
+           (E->cx - E->coloff) + 1);
   abAppend(&ab, buf, strlen(buf));
 
   abAppend(&ab, "\x1b[?25h", 6); // show cursor
