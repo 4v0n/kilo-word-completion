@@ -5,6 +5,7 @@
 
 // defines
 #define VERSION "0.0.1"
+#define TAB_STOP 8
 
 // keybinds
 enum editorKey {
@@ -27,7 +28,9 @@ struct abuf { // append buffer
 
 typedef struct erow { // editor row
   int size;
+  int rsize;
   char *chars;
+  char *render;
 } erow;
 
 struct editorConfig {
