@@ -42,11 +42,12 @@ struct editorConfig {
   int coloff;     // column offset - current column use is scrolled to
   int screenrows; // no rows in terminal
   int screencols; // no columns in terminal
-  int numrows;
-  erow *row;
+  int numrows;    // number of rows in the editor
+  erow *row;      // row being edited
+  int dirty;      // whether file is changed
   char *filename;
-  char statusmsg[80];
-  time_t statusmsg_time;
+  char statusmsg[80];    // editor status message
+  time_t statusmsg_time; // amount of time status message is visible
   struct termios orig_termios;
 };
 
