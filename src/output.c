@@ -1,11 +1,11 @@
 #include <data.h>
 #include <row_operations.h>
 #include <stdarg.h>
-#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <terminal.h>
+#include <time.h>
 #include <unistd.h>
 
 // empty buffer - constructor for abuf type
@@ -131,7 +131,8 @@ void editorDrawMessageBar(struct abuf *ab) {
 
   abAppend(ab, "\x1b[K", 3);
   int msglen = strlen(E->statusmsg);
-  if (msglen > E->screencols) msglen = E->screencols;
+  if (msglen > E->screencols)
+    msglen = E->screencols;
   if (msglen && time(NULL) - E->statusmsg_time < 5)
     abAppend(ab, E->statusmsg, msglen);
 }

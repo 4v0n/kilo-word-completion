@@ -1,4 +1,5 @@
 #include <data.h>
+#include <editor_operations.h>
 #include <stdlib.h>
 #include <terminal.h>
 #include <unistd.h>
@@ -28,7 +29,7 @@ void editorMoveCursor(int key) {
     } else if (row && E->cx == row->size) {
       E->cy++;
       E->cx = 0;
-    } 
+    }
     break;
   case ARROW_UP:
     if (E->cy != 0) {
@@ -77,7 +78,8 @@ void editorProcessKeypress() {
       E->cy = E->rowoff;
     } else if (c == PAGE_DOWN) {
       E->cy = E->rowoff + E->screenrows - 1;
-      if (E->cy > E->numrows) E->cy = E->numrows;
+      if (E->cy > E->numrows)
+        E->cy = E->numrows;
     }
 
     int times = E->screenrows;
@@ -91,6 +93,10 @@ void editorProcessKeypress() {
   case ARROW_LEFT:
   case ARROW_RIGHT:
     editorMoveCursor(c);
+    break;
+
+  default:
+    editorInsertChar(c);
     break;
   }
 }
