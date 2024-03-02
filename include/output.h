@@ -10,6 +10,7 @@ void abFree(struct abuf *ab);
 // output
 void editorScroll();
 void editorDrawRows(struct abuf *ab);
+void editorDrawStatusBar(struct abuf *ab);
 void editorRefreshScreen();
 
 #endif

@@ -42,6 +42,7 @@ struct editorConfig {
   int screencols; // no columns in terminal
   int numrows;
   erow *row;
+  char *filename;
   struct termios orig_termios;
 };
 
