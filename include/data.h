@@ -10,6 +10,7 @@
 
 // keybinds
 enum editorKey {
+  BACKSPACE = 127,
   ARROW_LEFT = 1000,
   ARROW_RIGHT, // 1001
   ARROW_UP,    // 1002 ...
