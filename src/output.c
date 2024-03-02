@@ -1,5 +1,7 @@
 #include <data.h>
 #include <row_operations.h>
+#include <stdarg.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -121,6 +123,17 @@ void editorDrawStatusBar(struct abuf *ab) {
     }
   }
   abAppend(ab, "\x1b[m", 3); // switch back to normal
+  abAppend(ab, "\r\n", 2);
+}
+
+void editorDrawMessageBar(struct abuf *ab) {
+  struct editorConfig *E = getEditorConfig();
+
+  abAppend(ab, "\x1b[K", 3);
+  int msglen = strlen(E->statusmsg);
+  if (msglen > E->screencols) msglen = E->screencols;
+  if (msglen && time(NULL) - E->statusmsg_time < 5)
+    abAppend(ab, E->statusmsg, msglen);
 }
 
 // Draws each row of the buffer of text being edited
@@ -135,6 +148,7 @@ void editorRefreshScreen() {
 
   editorDrawRows(&ab);
   editorDrawStatusBar(&ab);
+  editorDrawMessageBar(&ab);
 
   // position cursor
   char buf[32];
@@ -146,4 +160,14 @@ void editorRefreshScreen() {
 
   write(STDOUT_FILENO, ab.b, ab.len); // write buffer to standard output
   abFree(&ab);                        // free buffer
+}
+
+void editorSetStatusMessage(const char *fmt, ...) {
+  struct editorConfig *E = getEditorConfig();
+
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(E->statusmsg, sizeof(E->statusmsg), fmt, ap);
+  va_end(ap);
+  E->statusmsg_time = time(NULL);
 }
