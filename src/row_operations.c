@@ -1,7 +1,19 @@
-#include <stdlib.h>
-#include <terminal.h>
-#include <string.h>
 #include <data.h>
+#include <stdlib.h>
+#include <string.h>
+#include <terminal.h>
+
+// convert chars index into render index
+int editorRowCxToRx(erow *row, int cx) {
+  int rx = 0;
+  int j;
+  for (j = 0; j < cx; j++) {
+    if (row->chars[j] == '\t')
+      rx += (TAB_STOP - 1) - (rx % TAB_STOP);
+    rx++;
+  }
+  return rx;
+}
 
 // fills contents of render string
 void editorUpdateRow(erow *row) {
@@ -9,17 +21,19 @@ void editorUpdateRow(erow *row) {
   int j;
   // loop through chars and count tabs
   for (j = 0; j < row->size; j++)
-    if (row->chars[j] == '\t') tabs++;
+    if (row->chars[j] == '\t')
+      tabs++;
 
   free(row->render);
-  row->render = malloc(row->size + tabs*(TAB_STOP - 1) + 1);
+  row->render = malloc(row->size + tabs * (TAB_STOP - 1) + 1);
 
   int idx = 0;
   for (j = 0; j < row->size; j++) {
     if (row->chars[j] == '\t') {
       // if character is tab, append one space
       row->render[idx++] = ' ';
-      while (idx % TAB_STOP != 0) row->render[idx++] = ' ';
+      while (idx % TAB_STOP != 0)
+        row->render[idx++] = ' ';
     } else {
       row->render[idx++] = row->chars[j];
     }

@@ -34,7 +34,8 @@ typedef struct erow { // editor row
 } erow;
 
 struct editorConfig {
-  int cx, cy;     // x - horizontal coordinate of cursor, y - vertical
+  int cx, cy;     // x - index to char field of erow, y - vertical coord
+  int rx;         // horizontal coordinate
   int rowoff;     // row offset - current row user is scrolled to
   int coloff;     // column offset - current column use is scrolled to
   int screenrows; // no rows in terminal
