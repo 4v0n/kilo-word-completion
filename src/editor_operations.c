@@ -6,10 +6,26 @@ void editorInsertChar(int c) {
   struct editorConfig *E = getEditorConfig();
 
   if (E->cy == E->numrows) {
-    editorAppendRow("", 0);
+    editorInsertRow(E->numrows, "", 0);
   }
   editorRowInsertChar(&E->row[E->cy], E->cx, c);
   E->cx++;
+}
+
+void editorInsertNewLine() {
+  struct editorConfig *E = getEditorConfig();
+
+  if (E->cx == 0) {
+    editorInsertRow(E->cy, "", 0);
+  } else {
+    erow *row = &E->row[E->cy];
+    editorInsertRow(E->cy + 1, &row->chars[E->cx], row->size - E->cx);
+    row = &E->row[E->cy];
+    row->chars[row->size] = '\0';
+    editorUpdateRow(row);
+  }
+  E->cy++;
+  E->cx = 0;
 }
 
 void editorDelChar() {

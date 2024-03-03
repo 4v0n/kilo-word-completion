@@ -4,6 +4,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <input.h>
 #include <output.h>
 #include <row_operations.h>
 #include <stdio.h>
@@ -52,7 +53,7 @@ void editorOpen(char *filename) {
     while (linelen > 0 &&
            (line[linelen - 1] == '\n' || line[linelen - 1] == '\r'))
       linelen--;
-    editorAppendRow(line, linelen);
+    editorInsertRow(E->numrows, line, linelen);
   }
   free(line);
   fclose(fp);
@@ -62,8 +63,13 @@ void editorOpen(char *filename) {
 void editorSave() {
   struct editorConfig *E = getEditorConfig();
 
-  if (E->filename == NULL)
-    return;
+  if (E->filename == NULL) {
+    E->filename = editorPrompt("Save as: %s (ESC to cancel)");
+    if (E->filename == NULL) {
+      editorSetStatusMessage("Save aborted");
+      return;
+    }
+  }
 
   int len;
   char *buf = editorRowsToString(&len);
