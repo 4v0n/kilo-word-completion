@@ -1,6 +1,7 @@
 #include <data.h>
 #include <editor_operations.h>
 #include <io.h>
+#include <output.h>
 #include <stdlib.h>
 #include <terminal.h>
 #include <unistd.h>
@@ -53,6 +54,7 @@ void editorMoveCursor(int key) {
 
 // Waits for a keypress and handles it
 void editorProcessKeypress() {
+  static int quit_times = QUIT_TIMES;
   int c = editorReadKey();
   struct editorConfig *E = getEditorConfig();
 
@@ -63,6 +65,13 @@ void editorProcessKeypress() {
     break;
 
   case CTRL_KEY('q'): // quit program
+    if (E->dirty && quit_times > 0) {
+      editorSetStatusMessage(
+          "File has unsaved changes! Press Ctrl-Q once more to confirm.");
+      quit_times--;
+      return;
+    }
+
     // clear screen and reposition cursor on quit
     write(STDOUT_FILENO, "\x1b[2J", 4);
     write(STDOUT_FILENO, "\x1b[H", 3);
@@ -119,4 +128,6 @@ void editorProcessKeypress() {
     editorInsertChar(c);
     break;
   }
+
+  quit_times = QUIT_TIMES;
 }

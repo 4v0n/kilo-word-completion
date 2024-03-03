@@ -7,6 +7,7 @@
 // defines
 #define VERSION "0.0.1"
 #define TAB_STOP 8
+#define QUIT_TIMES 1
 
 // keybinds
 enum editorKey {
