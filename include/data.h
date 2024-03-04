@@ -29,13 +29,20 @@ enum editorKey {
 };
 
 // highlighting
-enum editorHighlight { HL_NORMAL = 0, HL_STRING, HL_NUMBER, HL_MATCH };
+enum editorHighlight {
+  HL_NORMAL = 0,
+  HL_COMMENT,
+  HL_STRING,
+  HL_NUMBER,
+  HL_MATCH
+};
 
 // structs
 struct editorSyntax {
   char *filetype; // name of filetype
   char **
       filematch; // array of strings, each a pattern to match a filename against
+  char *singleline_comment_start;
   int flags;     // bit field containing flags whether to highlight numbers and
                  // whether to highlight strings for filetype
 };
