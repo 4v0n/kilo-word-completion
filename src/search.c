@@ -38,6 +38,9 @@ void editorFindCallback(char *query, int key) {
       last_match = current;
       E->cy = current;
       E->cx = editorRowRxToCx(row, match - row->render);
+      E->rowoff = E->numrows;
+
+      memset(&row->hl[match - row->render], HL_MATCH, strlen(query));
       break;
     }
   }

@@ -25,10 +25,11 @@ enum editorKey {
   PAGE_DOWN
 };
 
-// syntax highlighting
+// highlighting
 enum editorHighlight {
   HL_NORMAL = 0,
-  HL_NUMBER
+  HL_NUMBER,
+  HL_MATCH
 };
 
 // structs
