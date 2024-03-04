@@ -3,6 +3,7 @@
 #include <editor_operations.h>
 #include <io.h>
 #include <output.h>
+#include <search.h>
 #include <stdlib.h>
 #include <terminal.h>
 #include <unistd.h>
@@ -25,7 +26,8 @@ char *editorPrompt(char *prompt) {
 
     int c = editorReadKey();
     if (c == DEL_KEY || c == CTRL_KEY('h') || c == BACKSPACE) {
-      if (buflen != 0) buf[--buflen] = '\0';
+      if (buflen != 0)
+        buf[--buflen] = '\0';
     } else if (c == '\x1b') {
       editorSetStatusMessage("");
       free(buf);
@@ -124,6 +126,10 @@ void editorProcessKeypress() {
   case END_KEY:
     if (E->cy < E->numrows)
       E->cx = E->row[E->cy].size;
+    break;
+
+  case CTRL_KEY('f'):
+    editorFind();
     break;
 
   case BACKSPACE:
