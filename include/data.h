@@ -25,6 +25,12 @@ enum editorKey {
   PAGE_DOWN
 };
 
+// syntax highlighting
+enum editorHighlight {
+  HL_NORMAL = 0,
+  HL_NUMBER
+};
+
 // structs
 struct abuf { // append buffer
   char *b;
@@ -36,6 +42,7 @@ typedef struct erow { // editor row
   int rsize;
   char *chars;
   char *render;
+  unsigned char *hl;
 } erow;
 
 struct editorConfig {

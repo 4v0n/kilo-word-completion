@@ -1,3 +1,4 @@
+#include <syntax_highlighting.h>
 #include <data.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,7 +24,8 @@ int editorRowRxToCx(erow *row, int rx) {
       cur_rx += (TAB_STOP - 1) - (cur_rx % TAB_STOP);
     cur_rx++;
 
-    if (cur_rx > rx) return cx;
+    if (cur_rx > rx)
+      return cx;
   }
   return cx;
 }
@@ -53,12 +55,15 @@ void editorUpdateRow(erow *row) {
   }
   row->render[idx] = '\0';
   row->rsize = idx;
+
+  editorUpdateSyntax(row);
 }
 
 void editorInsertRow(int at, char *s, size_t len) {
   struct editorConfig *E = getEditorConfig();
 
-  if (at < 0 || at > E->numrows) return;
+  if (at < 0 || at > E->numrows)
+    return;
 
   E->row = realloc(E->row, sizeof(erow) * (E->numrows + 1));
   memmove(&E->row[at + 1], &E->row[at], sizeof(erow) * (E->numrows - at));
@@ -71,6 +76,7 @@ void editorInsertRow(int at, char *s, size_t len) {
   // initialise render
   E->row[at].rsize = 0;
   E->row[at].render = NULL;
+  E->row[at].hl = NULL;
   editorUpdateRow(&E->row[at]);
 
   E->numrows++;
@@ -80,12 +86,14 @@ void editorInsertRow(int at, char *s, size_t len) {
 void editorFreeRow(erow *row) {
   free(row->render);
   free(row->chars);
+  free(row->hl);
 }
 
 void editorDelRow(int at) {
   struct editorConfig *E = getEditorConfig();
 
-  if (at < 0 || at >= E->numrows) return;
+  if (at < 0 || at >= E->numrows)
+    return;
   editorFreeRow(&E->row[at]);
   memmove(&E->row[at], &E->row[at + 1], sizeof(erow) * (E->numrows - at - 1));
   E->numrows--;
@@ -100,7 +108,7 @@ void editorRowInsertChar(erow *row, int at, int c) {
   row->size++;
   row->chars[at] = c;
   editorUpdateRow(row);
-  
+
   getEditorConfig()->dirty++;
 }
 
@@ -114,7 +122,8 @@ void editorRowAppendString(erow *row, char *s, size_t len) {
 }
 
 void editorRowDelChar(erow *row, int at) {
-  if (at < 0 || at >= row->size) return;
+  if (at < 0 || at >= row->size)
+    return;
   memmove(&row->chars[at], &row->chars[at + 1], row->size - at);
   row->size--;
   editorUpdateRow(row);

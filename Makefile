@@ -7,5 +7,6 @@ main: src/main.c \
       src/io.c\
       src/row_operations.c\
       src/editor_operations.c\
-      src/search.c
+      src/search.c\
+      src/syntax_highlighting.c
 	$(CC) $(CFLAGS) $^ -o build/kilo -Iinclude
