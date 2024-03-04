@@ -5,5 +5,6 @@
 
 void editorUpdateSyntax(erow *row);
 int editorSyntaxToColour(int hl);
+void editorSelectSyntaxHighlight();
 
 #endif

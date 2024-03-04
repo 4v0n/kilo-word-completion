@@ -11,6 +11,8 @@
 #define HELP_MESSAGE                                                           \
   "HELP: Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find | Ctrl-H = show help"
 
+#define HL_HIGHLIGHT_NUMBERS (1 << 0)
+
 // keybinds
 enum editorKey {
   BACKSPACE = 127,
@@ -26,13 +28,17 @@ enum editorKey {
 };
 
 // highlighting
-enum editorHighlight {
-  HL_NORMAL = 0,
-  HL_NUMBER,
-  HL_MATCH
-};
+enum editorHighlight { HL_NORMAL = 0, HL_NUMBER, HL_MATCH };
 
 // structs
+struct editorSyntax {
+  char *filetype; // name of filetype
+  char **
+      filematch; // array of strings, each a pattern to match a filename against
+  int flags;     // bit field containing flags whether to highlight numbers and
+                 // whether to highlight strings for filetype
+};
+
 struct abuf { // append buffer
   char *b;
   int len;
@@ -59,6 +65,7 @@ struct editorConfig {
   char *filename;
   char statusmsg[80];    // editor status message
   time_t statusmsg_time; // amount of time status message is visible
+  struct editorSyntax *syntax; 
   struct termios orig_termios;
 };
 
