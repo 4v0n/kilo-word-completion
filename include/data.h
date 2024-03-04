@@ -12,6 +12,7 @@
   "HELP: Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find | Ctrl-H = show help"
 
 #define HL_HIGHLIGHT_NUMBERS (1 << 0)
+#define HL_HIGHLIGHT_STRINGS (1 << 1)
 
 // keybinds
 enum editorKey {
@@ -28,7 +29,7 @@ enum editorKey {
 };
 
 // highlighting
-enum editorHighlight { HL_NORMAL = 0, HL_NUMBER, HL_MATCH };
+enum editorHighlight { HL_NORMAL = 0, HL_STRING, HL_NUMBER, HL_MATCH };
 
 // structs
 struct editorSyntax {
@@ -65,7 +66,7 @@ struct editorConfig {
   char *filename;
   char statusmsg[80];    // editor status message
   time_t statusmsg_time; // amount of time status message is visible
-  struct editorSyntax *syntax; 
+  struct editorSyntax *syntax;
   struct termios orig_termios;
 };
 
