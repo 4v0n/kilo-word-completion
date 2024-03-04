@@ -5,6 +5,7 @@
 #include <terminal.h>
 
 #include <ctype.h>
+#include <data.h>
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -17,7 +18,7 @@ int main(int argc, char *argv[]) {
     editorOpen(argv[1]);
   }
 
-  editorSetStatusMessage("HELP: Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find");
+  editorSetStatusMessage(HELP_MESSAGE);
 
   // while the program is running
   while (1) {

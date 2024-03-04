@@ -8,6 +8,8 @@
 #define VERSION "0.0.1"
 #define TAB_STOP 8
 #define QUIT_TIMES 1
+#define HELP_MESSAGE                                                           \
+  "HELP: Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find | Ctrl-H = show help"
 
 // keybinds
 enum editorKey {

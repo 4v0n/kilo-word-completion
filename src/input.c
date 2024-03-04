@@ -132,8 +132,11 @@ void editorProcessKeypress() {
     editorFind();
     break;
 
-  case BACKSPACE:
   case CTRL_KEY('h'):
+    editorSetStatusMessage(HELP_MESSAGE);
+    break;
+
+  case BACKSPACE:
   case DEL_KEY:
     if (c == DEL_KEY)
       editorMoveCursor(ARROW_RIGHT);
