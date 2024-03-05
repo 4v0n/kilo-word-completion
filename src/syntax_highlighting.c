@@ -13,7 +13,7 @@ char *C_HL_keywords[] = {"switch",    "if",      "while",   "for",    "break",
                          "unsigned|", "signed|", "void|",   NULL};
 
 struct editorSyntax HLDB[] = {
-    {"c", C_HL_extensions, C_HL_keywords, "//",
+    {"c", C_HL_extensions, C_HL_keywords, "//", "/*", "*/",
      HL_HIGHLIGHT_NUMBERS | HL_HIGHLIGHT_STRINGS},
 };
 
@@ -35,20 +35,46 @@ void editorUpdateSyntax(erow *row) {
   char **keywords = E->syntax->keywords;
 
   char *scs = E->syntax->singleline_comment_start;
+  char *mcs = E->syntax->multiline_comment_start;
+  char *mce = E->syntax->multiline_comment_end;
+
   int scs_len = scs ? strlen(scs) : 0;
+  int mcs_len = mcs ? strlen(mcs) : 0;
+  int mce_len = mce ? strlen(mce) : 0;
 
   int prev_sep = 1;
   int in_string = 0;
+  int in_comment = (row->idx > 0 && E->row[row->idx - 1].hl_open_comment);
 
   int i = 0;
   while (i < row->rsize) {
     char c = row->render[i];
     unsigned char prev_hl = (i > 0) ? row->hl[i - 1] : HL_NORMAL;
 
-    if (scs_len && !in_string) {
+    if (scs_len && !in_string && in_comment) {
       if (!strncmp(&row->render[i], scs, scs_len)) {
         memset(&row->hl[i], HL_COMMENT, row->rsize - 1);
         break;
+      }
+    }
+
+    if (mcs_len && mce_len && !in_string) {
+      if (in_comment) {
+        row->hl[i] = HL_MLCOMMENT;
+        if (!strncmp(&row->render[i], mce, mce_len)) {
+          i += mce_len;
+          in_comment = 0;
+          prev_sep = 1;
+          continue;
+        } else {
+          i++;
+          continue;
+        }
+      } else if (!strncmp(&row->render[i], mcs, mcs_len)) {
+        memset(&row->hl[i], HL_MLCOMMENT, mcs_len);
+        i += mcs_len;
+        in_comment = 1;
+        continue;
       }
     }
 
@@ -109,11 +135,17 @@ void editorUpdateSyntax(erow *row) {
     prev_sep = is_separator(c);
     i++;
   }
+
+  int changed = (row->hl_open_comment != in_comment);
+  row->hl_open_comment = in_comment;
+  if (changed && row->idx + 1 < E->numrows)
+    editorUpdateSyntax(&E->row[row->idx + 1]);
 }
 
 int editorSyntaxToColour(int hl) {
   switch (hl) {
   case HL_COMMENT:
+  case HL_MLCOMMENT:
     return 36;
   case HL_KEYWORD1:
     return 33;

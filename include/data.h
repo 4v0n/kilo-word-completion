@@ -32,6 +32,7 @@ enum editorKey {
 enum editorHighlight {
   HL_NORMAL = 0,
   HL_COMMENT,
+  HL_MLCOMMENT,
   HL_KEYWORD1,
   HL_KEYWORD2,
   HL_STRING,
@@ -46,6 +47,8 @@ struct editorSyntax {
       filematch; // array of strings, each a pattern to match a filename against
   char **keywords; // arrays of strings of keywords
   char *singleline_comment_start;
+  char *multiline_comment_start;
+  char *multiline_comment_end;
   int flags; // bit field containing flags whether to highlight numbers and
              // whether to highlight strings for filetype
 };
@@ -56,11 +59,13 @@ struct abuf { // append buffer
 };
 
 typedef struct erow { // editor row
+  int idx;
   int size;
   int rsize;
   char *chars;
   char *render;
   unsigned char *hl;
+  int hl_open_comment;
 } erow;
 
 struct editorConfig {
