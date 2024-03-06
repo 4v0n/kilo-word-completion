@@ -1,3 +1,13 @@
+/*
+  This file contains code from antirez's kilo text editor:
+  https://github.com/antirez/kilo and was programmed following Paige Ruten's
+  "Build Your Own Text Editor" tutorial:
+    https://viewsourcecode.org/snaptoken/kilo/index.html |
+    https://github.com/snaptoken/kilo-tutorial?tab=readme-ov-file
+
+  This file handles user input to the text editor
+*/
+
 #include <ctype.h>
 #include <data.h>
 #include <editor_operations.h>
@@ -13,33 +23,42 @@
 
 /*** functions ***/
 
+// get user input with a prompt
 char *editorPrompt(char *prompt, void (*callback)(char *, int)) {
+  // Allocate a buffer to store user input
   size_t bufsize = 128;
   char *buf = malloc(bufsize);
 
+  //  initialise buf
   size_t buflen = 0;
   buf[0] = '\0';
 
   while (1) {
+    // display prompt
     editorSetStatusMessage(prompt, buf);
     editorRefreshScreen();
 
     int c = editorReadKey();
     if (c == DEL_KEY || c == CTRL_KEY('h') || c == BACKSPACE) {
+      // handle special keys
       if (buflen != 0)
         buf[--buflen] = '\0';
-    } else if (c == '\x1b') {
+
+    } else if (c == '\x1b') { // esc
       editorSetStatusMessage("");
       if (callback) callback(buf, c);
       free(buf);
       return NULL;
-    } else if (c == '\r') {
+      
+    } else if (c == '\r') { // enter
       if (buflen != 0) {
+        // end input, call callback and return
         editorSetStatusMessage("");
         if (callback) callback(buf, c);
         return buf;
       }
-    } else if (!iscntrl(c) && c < 128) {
+    } else if (!iscntrl(c) && c < 128) { // normal characters
+      // append chars to buf
       if (buflen == bufsize - 1) {
         bufsize *= 2;
         buf = realloc(buf, bufsize);
@@ -48,13 +67,16 @@ char *editorPrompt(char *prompt, void (*callback)(char *, int)) {
       buf[buflen] = '\0';
     }
 
+    // call callback with current buf
     if (callback) callback(buf, c);
   }
 }
 
+// Moves curser based on keyboard input
 void editorMoveCursor(int key) {
   struct editorConfig *E = getEditorConfig();
 
+  // get current editing row or set to null if beyond end of file
   erow *row = (E->cy >= E->numrows) ? NULL : &E->row[E->cy];
 
   switch (key) {
@@ -86,6 +108,7 @@ void editorMoveCursor(int key) {
     break;
   }
 
+  // bpundary check
   row = (E->cy >= E->numrows) ? NULL : &E->row[E->cy];
   int rowlen = row ? row->size : 0;
   if (E->cx > rowlen) {
@@ -101,8 +124,8 @@ void editorProcessKeypress() {
 
   switch (c) {
 
-  case '\r':
-    editorInsertNewLine();
+  case '\r': // enter
+    editorInsertNewLine(); // newline
     break;
 
   case CTRL_KEY('q'): // quit program
@@ -128,6 +151,7 @@ void editorProcessKeypress() {
     break;
 
   case END_KEY:
+    // navigate cursor to end of row
     if (E->cy < E->numrows)
       E->cx = E->row[E->cy].size;
     break;
