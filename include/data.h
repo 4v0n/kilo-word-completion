@@ -4,17 +4,21 @@
 #include <termios.h>
 #include <time.h>
 
-// defines
+/* defines */
+
 #define VERSION "0.0.1"
 #define TAB_STOP 8
 #define QUIT_TIMES 1
 #define HELP_MESSAGE                                                           \
   "HELP: Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find | Ctrl-H = show help"
 
+// syntax highlighting bit flags
 #define HL_HIGHLIGHT_NUMBERS (1 << 0)
 #define HL_HIGHLIGHT_STRINGS (1 << 1)
 
-// keybinds
+/* enums */
+
+// keybind keycodes
 enum editorKey {
   BACKSPACE = 127,
   ARROW_LEFT = 1000,
@@ -28,7 +32,7 @@ enum editorKey {
   PAGE_DOWN
 };
 
-// highlighting
+// highlighting types
 enum editorHighlight {
   HL_NORMAL = 0,
   HL_COMMENT,
@@ -40,7 +44,9 @@ enum editorHighlight {
   HL_MATCH
 };
 
-// structs
+/* structs  */
+
+// details about file type
 struct editorSyntax {
   char *filetype; // name of filetype
   char **
@@ -53,23 +59,27 @@ struct editorSyntax {
              // whether to highlight strings for filetype
 };
 
-struct abuf { // append buffer
-  char *b;
-  int len;
+// append buffer for string manipulation
+struct abuf {
+  char *b; // string
+  int len; // length (size) of string
 };
 
-typedef struct erow { // editor row
-  int idx;
-  int size;
-  int rsize;
-  char *chars;
-  char *render;
-  unsigned char *hl;
-  int hl_open_comment;
+// Represents a row of text in the editor
+typedef struct erow {
+  int idx;           // index of row in editor
+  int size;          // number of characters the string is (size/len)
+  int rsize;         // Allocated space for the render field
+  char *chars;       // text content of the row
+  char *render;      // stores text as displayed on screen
+  unsigned char *hl; // array where each character corresponds to a character in
+                     // *render - for highlighting
+  int hl_open_comment; // bit flag - is in multiline comment?
 } erow;
 
 struct editorConfig {
-  int cx, cy;     // x - index to char field of erow, y - vertical coord
+  int cx;         // X coord of
+  int cy;         // Y coord of cursor (0 = top)
   int rx;         // horizontal coordinate
   int rowoff;     // row offset - current row user is scrolled to
   int coloff;     // column offset - current column use is scrolled to
