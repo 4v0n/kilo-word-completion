@@ -1,5 +1,5 @@
 /*
-  This file contains code from antirez's kilo text editor:
+  This file contains code adapted from antirez's kilo text editor:
   https://github.com/antirez/kilo and was programmed following Paige Ruten's
   "Build Your Own Text Editor" tutorial:
     https://viewsourcecode.org/snaptoken/kilo/index.html |
