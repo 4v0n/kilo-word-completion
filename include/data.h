@@ -1,3 +1,13 @@
+/*
+  This file contains code adapted from antirez's kilo text editor:
+  https://github.com/antirez/kilo and was programmed following Paige Ruten's
+  "Build Your Own Text Editor" tutorial:
+    https://viewsourcecode.org/snaptoken/kilo/index.html |
+    https://github.com/snaptoken/kilo-tutorial?tab=readme-ov-file
+
+  This file defines global structures and values
+*/
+
 #ifndef DATA_H
 #define DATA_H
 
@@ -17,6 +27,29 @@
 #define HL_HIGHLIGHT_STRINGS (1 << 1)
 
 /* enums */
+
+// colour codes
+enum foregroundColours {
+  BLACK = 30,
+  RED,
+  GREEN,
+  YELLOW,
+  BLUE,
+  MAGENTA,
+  CYAN,
+  WHITE
+};
+
+enum backgroundColours {
+  BLACK_BG = 40,
+  RED_BG,
+  GREEN_BG,
+  YELLOW_BG,
+  BLUE_BG,
+  MAGENTA_BG,
+  CYAN_BG,
+  WHITE_BG
+};
 
 // keybind keycodes
 enum editorKey {
@@ -78,9 +111,9 @@ typedef struct erow {
 } erow;
 
 struct editorConfig {
-  int cx;         // X coord of
+  int cx;         // X coord of cursor
   int cy;         // Y coord of cursor (0 = top)
-  int rx;         // horizontal coordinate
+  int rx;         // "real" horizontal coordinate
   int rowoff;     // row offset - current row user is scrolled to
   int coloff;     // column offset - current column use is scrolled to
   int screenrows; // no rows in terminal

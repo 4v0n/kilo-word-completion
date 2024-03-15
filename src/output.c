@@ -1,3 +1,13 @@
+/*
+  This file contains code from antirez's kilo text editor:
+  https://github.com/antirez/kilo and was programmed following Paige Ruten's
+  "Build Your Own Text Editor" tutorial:
+    https://viewsourcecode.org/snaptoken/kilo/index.html |
+    https://github.com/snaptoken/kilo-tutorial?tab=readme-ov-file
+
+  This file contains functions that handle output operations
+*/
+
 #include <ctype.h>
 #include <data.h>
 #include <row_operations.h>
@@ -39,16 +49,19 @@ void abFree(struct abuf *ab) {
 void editorScroll() {
   struct editorConfig *E = getEditorConfig();
 
-  E->rx = 0;
+  E->rx = 0; // set render coord to 0
   if (E->cy < E->numrows) {
+    // if cursor is within bounds, calculate rx
     E->rx = editorRowCxToRx(&E->row[E->cy], E->cx);
   }
 
   // vertical
   if (E->cy < E->rowoff) {
+    // if cursor is above viewport, mobe into view
     E->rowoff = E->cy;
   }
   if (E->cy >= E->rowoff + E->screenrows) {
+    // if cursor is below viewport
     E->rowoff = E->cy - E->screenrows + 1;
   }
 
@@ -61,72 +74,102 @@ void editorScroll() {
   }
 }
 
-// Draw a column of tildes on the left side of the screen
-void editorDrawRows(struct abuf *ab) {
-  int y;
+void displayWelcomeMessage(struct abuf *ab) {
   struct editorConfig *E = getEditorConfig();
 
+  // print editor version on 3rd row
+  char welcome[80];
+  int welcomelen =
+      snprintf(welcome, sizeof(welcome), "Kilo editor -- version %s", VERSION);
+  if (welcomelen > E->screencols)
+    welcomelen = E->screencols;
+
+  // center message and pad
+  int padding = (E->screencols - welcomelen) / 2;
+  if (padding) {
+    abAppend(ab, "~", 1);
+    padding--;
+  }
+  while (padding--)
+    abAppend(ab, " ", 1);
+
+  abAppend(ab, welcome, welcomelen);
+}
+
+void drawTextRow(struct abuf *ab, int filerow) {
+  struct editorConfig *E = getEditorConfig();
+
+  // calc length of row to be displayed
+  int len = E->row[filerow].rsize - E->coloff;
+  if (len < 0)
+    len = 0;
+  if (len > E->screencols)
+    len = E->screencols; // adjust for horizontal scroll
+
+  char *c = &E->row[filerow].render[E->coloff]; // render chars
+  unsigned char *hl = &E->row[filerow].hl[E->coloff]; // syntax highlight
+  int current_colour = -1;
+
+  // loop over each character in row
+  int j;
+  for (j = 0; j < len; j++) {
+    // handle control chars
+    if (iscntrl(c[j])) {
+      char sym = (c[j] <= 26) ? '@' + c[j] : '?';
+      abAppend(ab, "\x1b[7m", 4); // set inverse style
+      abAppend(ab, &sym, 1);
+      abAppend(ab, "\x1b[m", 3); // turn off inverse
+
+      // reset colour
+      if (current_colour != -1) {
+        char buf[16];
+        int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", current_colour);
+        abAppend(ab, buf, clen);
+      }
+
+    } else if (hl[j] == HL_NORMAL) {
+      // reset colour if current character is not highlighted
+      if (current_colour != -1) {
+        abAppend(ab, "\x1b[39m", 5);
+        current_colour = -1;
+      }
+      abAppend(ab, &c[j], 1); // append char
+
+    } else { // highlighted character
+      int colour = editorSyntaxToColour(hl[j]);
+      if (colour != current_colour) {
+        current_colour = colour;
+        char buf[16];
+        int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", colour);
+        abAppend(ab, buf, clen);
+      }
+      abAppend(ab, &c[j], 1);
+    }
+  }
+
+  // reset colour
+  abAppend(ab, "\x1b[39m", 5);
+}
+
+// Renders the content of the text editor to the screen
+void editorDrawRows(struct abuf *ab) {
+  struct editorConfig *E = getEditorConfig();
+
+  // loop through all screen rows
+  int y;
   for (y = 0; y < E->screenrows; y++) {
     int filerow = y + E->rowoff;
     if (filerow >= E->numrows) {
+      // if empty file and third line
       if (E->numrows == 0 && y == E->screenrows / 3) {
-        // print editor version on 3rd row
-        char welcome[80];
-        int welcomelen = snprintf(welcome, sizeof(welcome),
-                                  "Kilo editor -- version %s", VERSION);
-        if (welcomelen > E->screencols)
-          welcomelen = E->screencols;
-        int padding = (E->screencols - welcomelen) / 2;
-        if (padding) {
-          abAppend(ab, "~", 1);
-          padding--;
-        }
-        while (padding--)
-          abAppend(ab, " ", 1);
-        abAppend(ab, welcome, welcomelen);
+        // no rows in file (empty file)
+        displayWelcomeMessage(ab);
       } else {
+        // draw tilde on left of screen
         abAppend(ab, "~", 1);
       }
     } else {
-      int len = E->row[filerow].rsize - E->coloff;
-      if (len < 0)
-        len = 0;
-      if (len > E->screencols)
-        len = E->screencols;
-
-      char *c = &E->row[filerow].render[E->coloff];
-      unsigned char *hl = &E->row[filerow].hl[E->coloff];
-      int current_colour = -1;
-      int j;
-      for (j = 0; j < len; j++) {
-        if (iscntrl(c[j])) {
-          char sym = (c[j] <= 26) ? '@' + c[j] : '?';
-          abAppend(ab, "\x1b[7m", 4);
-          abAppend(ab, &sym, 1);
-          abAppend(ab, "\x1b[m", 3);
-          if (current_colour != -1) {
-            char buf[16];
-            int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", current_colour);
-            abAppend(ab, buf, clen);
-          }
-        } else if (hl[j] == HL_NORMAL) {
-          if (current_colour != -1) {
-            abAppend(ab, "\x1b[39m", 5);
-            current_colour = -1;
-          }
-          abAppend(ab, &c[j], 1);
-        } else {
-          int colour = editorSyntaxToColour(hl[j]);
-          if (colour != current_colour) {
-            current_colour = colour;
-            char buf[16];
-            int clen = snprintf(buf, sizeof(buf), "\x1b[%dm", colour);
-            abAppend(ab, buf, clen);
-          }
-          abAppend(ab, &c[j], 1);
-        }
-      }
-      abAppend(ab, "\x1b[39m", 5);
+      drawTextRow(ab, filerow);
     }
 
     abAppend(ab, "\x1b[K", 3); // clear line
@@ -134,23 +177,31 @@ void editorDrawRows(struct abuf *ab) {
   }
 }
 
+// Renders the editor's status bar
 void editorDrawStatusBar(struct abuf *ab) {
   struct editorConfig *E = getEditorConfig();
 
-  abAppend(ab, "\x1b[7m", 4); // <esc>[7m switches to inverted colours
+  abAppend(ab, "\x1b[7m", 4); // invert colour mode
 
   char status[80], rstatus[80];
+
+  // left
   int len = snprintf(status, sizeof(status), "%.20s - %d lines %s",
                      E->filename ? E->filename : "[No Name]", E->numrows,
                      E->dirty ? "(modified)" : "");
+
+  // right
   int rlen = snprintf(rstatus, sizeof(rstatus), "%s | %d/%d",
                       E->syntax ? E->syntax->filetype : "unknown filetype",
                       E->cy + 1, E->numrows);
 
+  // truncate left if too long
   if (len > E->screencols)
     len = E->screencols;
+
   abAppend(ab, status, len);
 
+  // fill gap with spaces
   while (len < E->screencols) {
     if (E->screencols - len == rlen) {
       abAppend(ab, rstatus, rlen);
@@ -161,15 +212,16 @@ void editorDrawStatusBar(struct abuf *ab) {
     }
   }
   abAppend(ab, "\x1b[m", 3); // switch back to normal
-  abAppend(ab, "\r\n", 2);
+  abAppend(ab, "\r\n", 2); // newline
 }
 
+// Renders the editor's message bar
 void editorDrawMessageBar(struct abuf *ab) {
   struct editorConfig *E = getEditorConfig();
 
-  abAppend(ab, "\x1b[K", 3);
+  abAppend(ab, "\x1b[K", 3); // clear row
   int msglen = strlen(E->statusmsg);
-  if (msglen > E->screencols)
+  if (msglen > E->screencols) // truncate message length if too long
     msglen = E->screencols;
   if (msglen && time(NULL) - E->statusmsg_time < 5)
     abAppend(ab, E->statusmsg, msglen);
@@ -201,6 +253,7 @@ void editorRefreshScreen() {
   abFree(&ab);                        // free buffer
 }
 
+// Sets the editor's status message
 void editorSetStatusMessage(const char *fmt, ...) {
   struct editorConfig *E = getEditorConfig();
 
