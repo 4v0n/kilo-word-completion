@@ -11,9 +11,13 @@ SRCS = src/terminal.c \
 
 TESTS = tests/test_trie.c
 
-main: $(SRCS) src/main.c
+.PHONY: main test
+
+main: $(SRCS) src/main.c | build
 	$(CC) $(CFLAGS) $^ -o build/kilo
 
-# install CUnit with - sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev
-test: $(SRCS) $(TESTS) tests/test_runner.c
+test: $(SRCS) $(TESTS) tests/test_runner.c | build
 	$(CC) $(CFLAGS) $^ -o build/tests -I. -lcunit
+
+build:
+	mkdir -p build
