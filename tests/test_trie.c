@@ -96,6 +96,22 @@ void test_insert_empty_string() {
   assertLeafEmpty(root);
 }
 
+void test_insert_capital_word() {
+  insert(root, "APP", 3);
+
+  // skip a (0)
+  for (int i = 1; i < ALPHABET_SIZE; i++) {
+    CU_ASSERT_EQUAL(root->children[i], NULL);
+  }
+
+  // subtract index a due to offset
+  CU_ASSERT_TRUE(root->children[0]->children['p' - 'a']->children['p' - 'a']->isEndOfWord);
+  CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->weight, 3);
+
+  for (int i = 0; i < ALPHABET_SIZE; i++)
+    CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->children[i], NULL);
+}
+
 void add_tests_trie() {
   CU_pSuite suite = CU_add_suite("Trie Tests", setup, teardown);
 
@@ -104,4 +120,5 @@ void add_tests_trie() {
   CU_add_test(suite, "test insert multiple words", test_insert_multi_word);
   CU_add_test(suite, "test insert duplicate words", test_insert_duplicate_words);
   CU_add_test(suite, "test insert empty string", test_insert_empty_string);
+  CU_add_test(suite, "test insert capital word", test_insert_capital_word);
 }
