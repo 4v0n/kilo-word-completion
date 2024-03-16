@@ -40,9 +40,11 @@ void freeTrie(TrieNode *root) {
   if (!root) return;
   
   for (int i = 0; i < ALPHABET_SIZE; i++) {
-    if (root->children[i])
+    if (root->children[i]) {
       freeTrie(root->children[i]);
-
-  free(root);
+    }
   }
+  
+  // Free the root node after all its children have been freed
+  free(root);
 }
