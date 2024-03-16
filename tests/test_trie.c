@@ -68,10 +68,29 @@ void test_insert_multi_word() {
     CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['e' - 'a']->children[i], NULL);
 }
 
+// Tests insertion of duplicate words
+void test_insert_duplicate_words() {
+  insert(root, "app", 3);
+  insert(root, "app", 4);
+
+  // skip a (0)
+  for (int i = 1; i < ALPHABET_SIZE; i++) {
+    CU_ASSERT_EQUAL(root->children[i], NULL);
+  }
+
+  // should update to new values
+  CU_ASSERT_TRUE(root->children[0]->children['p' - 'a']->children['p' - 'a']->isEndOfWord);
+  CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->weight, 4);
+
+  for (int i = 0; i < ALPHABET_SIZE; i++)
+    CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->children[i], NULL);
+}
+
 void add_tests_trie() {
   CU_pSuite suite = CU_add_suite("Trie Tests", setup, teardown);
 
   CU_add_test(suite, "test getNode()", test_getNode);
   CU_add_test(suite, "test insert single word", test_insert_single_word);
   CU_add_test(suite, "test insert multiple words", test_insert_multi_word);
+  CU_add_test(suite, "test insert duplicate words", test_insert_duplicate_words);
 }
