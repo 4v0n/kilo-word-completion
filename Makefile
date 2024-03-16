@@ -1,4 +1,5 @@
 CFLAGS = -Wall -Wextra -pedantic -std=c99 -g -Iinclude
+
 SRCS = src/terminal.c \
       src/input.c \
       src/output.c \
@@ -11,7 +12,7 @@ SRCS = src/terminal.c \
 
 TESTS = tests/test_trie.c
 
-.PHONY: main test
+.PHONY: main test clean
 
 main: $(SRCS) src/main.c | build
 	$(CC) $(CFLAGS) $^ -o build/kilo
@@ -21,3 +22,6 @@ test: $(SRCS) $(TESTS) tests/test_runner.c | build
 
 build:
 	mkdir -p build
+
+clean:
+	rm -f build/tests build/kilo
