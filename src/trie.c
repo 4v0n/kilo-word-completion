@@ -1,3 +1,5 @@
+#include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <trie.h>
@@ -22,9 +24,19 @@ TrieNode *getNode() {
 void insert(TrieNode *root, const char *key, int weight) {
   TrieNode *pCrawl = root;
 
+  if (key[0] == '\0') {
+    return; // do not insert empty character
+  }
+
   // crawl through trie
   while (*key) {
-    int index = *key - 'a';
+    int index;
+    if (isupper(*key)) { // convert to lower case
+      index = tolower(*key) - 'a';
+    } else {
+      index = *key - 'a';
+    }
+
     if (!pCrawl->children[index])
       pCrawl->children[index] = getNode();
     pCrawl = pCrawl->children[index];
@@ -37,14 +49,15 @@ void insert(TrieNode *root, const char *key, int weight) {
 
 // Recursively free memory allocated for a trie
 void freeTrie(TrieNode *root) {
-  if (!root) return;
-  
+  if (!root)
+    return;
+
   for (int i = 0; i < ALPHABET_SIZE; i++) {
     if (root->children[i]) {
       freeTrie(root->children[i]);
     }
   }
-  
+
   // Free the root node after all its children have been freed
   free(root);
 }
