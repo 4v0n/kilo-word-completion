@@ -86,6 +86,16 @@ void test_insert_duplicate_words() {
     CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->children[i], NULL);
 }
 
+void test_insert_empty_string() {
+  // reset trie
+  teardown();
+  setup();
+
+  assertLeafEmpty(root);
+  insert(root, "", 1);
+  assertLeafEmpty(root);
+}
+
 void add_tests_trie() {
   CU_pSuite suite = CU_add_suite("Trie Tests", setup, teardown);
 
@@ -93,4 +103,5 @@ void add_tests_trie() {
   CU_add_test(suite, "test insert single word", test_insert_single_word);
   CU_add_test(suite, "test insert multiple words", test_insert_multi_word);
   CU_add_test(suite, "test insert duplicate words", test_insert_duplicate_words);
+  CU_add_test(suite, "test insert empty string", test_insert_empty_string);
 }
