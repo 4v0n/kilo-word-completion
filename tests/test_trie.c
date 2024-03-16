@@ -112,6 +112,18 @@ void test_insert_capital_word() {
     CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->children[i], NULL);
 }
 
+void test_search_nonexistent_word() {
+  char **suggestions = getSuggestions(root, "pro");
+  CU_ASSERT_EQUAL(suggestions[0], NULL);
+}
+
+void test_search_inserted_word() {
+  insert(root, "app", 3);
+
+  char **suggestions = getSuggestions(root, "ap");
+  CU_ASSERT_EQUAL(suggestions[0], "app");
+}
+
 void add_tests_trie() {
   CU_pSuite suite = CU_add_suite("Trie Tests", setup, teardown);
 
@@ -121,4 +133,6 @@ void add_tests_trie() {
   CU_add_test(suite, "test insert duplicate words", test_insert_duplicate_words);
   CU_add_test(suite, "test insert empty string", test_insert_empty_string);
   CU_add_test(suite, "test insert capital word", test_insert_capital_word);
+  CU_add_test(suite, "test search non-existent word", test_search_nonexistent_word);
+  CU_add_test(suite, "test search inserted word", test_search_inserted_word);
 }

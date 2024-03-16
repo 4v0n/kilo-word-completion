@@ -47,6 +47,10 @@ void insert(TrieNode *root, const char *key, int weight) {
   pCrawl->weight = weight;
 }
 
+char** getSuggestions(TrieNode *root, const char *prefix) {
+  return 0;
+}
+
 // Recursively free memory allocated for a trie
 void freeTrie(TrieNode *root) {
   if (!root)

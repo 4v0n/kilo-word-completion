@@ -17,6 +17,7 @@ typedef struct TrieNode {
 
 TrieNode *getNode();
 void insert(TrieNode *root, const char *key, int weight);
+char** getSuggestions(TrieNode *root, const char *prefix);
 void freeTrie(TrieNode *root);
 
 #endif
