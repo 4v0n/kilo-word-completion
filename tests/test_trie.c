@@ -151,6 +151,25 @@ void testInsertCapitalWord() {
                     NULL);
 }
 
+void testGetNonexistentLeaf() {
+  TrieNode *leaf = getTrieLeaf(root, "ten");
+  CU_ASSERT_EQUAL(leaf, NULL);
+}
+
+void testGetLeafOutOfBounds() {
+  TrieNode *leaf = getTrieLeaf(root, "!@#");
+  CU_ASSERT_EQUAL(leaf, NULL);
+}
+
+void testGetLeaf() {
+  insert(root, "app", 3);
+  TrieNode *leaf = getTrieLeaf(root, "ap");
+
+  CU_ASSERT_FALSE(leaf->isEndOfWord);
+  CU_ASSERT_EQUAL(leaf->weight, 0);
+  CU_ASSERT_NOT_EQUAL(leaf->children['p' - 'a'], NULL);
+}
+
 void testSearchNonexistentWord() {
   char **suggestions = getSuggestions(root, "pro");
   CU_ASSERT_EQUAL(suggestions[0], NULL);
@@ -176,6 +195,11 @@ void addTrieTests() {
   CU_add_test(suite, "test insert empty string", testInsertEmptyString);
   CU_add_test(suite, "test insert invalid word", testInsertInvalidString);
   CU_add_test(suite, "test insert capital word", testInsertCapitalWord);
+
+  // getTrieLeaf
+  CU_add_test(suite, "test get non existent trie leaf", testGetNonexistentLeaf);
+  CU_add_test(suite, "test get out of bounds / invalid trie leaf", testGetLeafOutOfBounds);
+  CU_add_test(suite, "test get trie leaf", testGetLeaf);
 
   // search
   CU_add_test(suite, "test search non-existent word",
