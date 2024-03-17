@@ -22,13 +22,12 @@ void assertLeafEmpty(struct TrieNode *node) {
     CU_ASSERT_EQUAL(node->children[i], NULL);
 }
 
-// Tests whether getNode() allocates memory for a new trie node and returns a non-null pointer
-void test_getNode() {
-  assertLeafEmpty(root);
-}
+// Tests whether getNode() allocates memory for a new trie node and returns a
+// non-null pointer
+void testGetNode() { assertLeafEmpty(root); }
 
 // Tests single word insertion
-void test_insert_single_word() {
+void testInsertSingleWord() {
   insert(root, "app", 3);
 
   // skip a (0)
@@ -37,15 +36,21 @@ void test_insert_single_word() {
   }
 
   // subtract index a due to offset
-  CU_ASSERT_TRUE(root->children[0]->children['p' - 'a']->children['p' - 'a']->isEndOfWord);
-  CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->weight, 3);
+  CU_ASSERT_TRUE(
+      root->children[0]->children['p' - 'a']->children['p' - 'a']->isEndOfWord);
+  CU_ASSERT_EQUAL(
+      root->children[0]->children['p' - 'a']->children['p' - 'a']->weight, 3);
 
   for (int i = 0; i < ALPHABET_SIZE; i++)
-    CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->children[i], NULL);
+    CU_ASSERT_EQUAL(root->children[0]
+                        ->children['p' - 'a']
+                        ->children['p' - 'a']
+                        ->children[i],
+                    NULL);
 }
 
 // Tests multiple word insertion with a common prefix
-void test_insert_multi_word() {
+void testInsertMultiWord() {
   insert(root, "app", 3);
   insert(root, "ape", 4);
 
@@ -54,22 +59,34 @@ void test_insert_multi_word() {
   }
 
   // test "app" is correct
-  CU_ASSERT_TRUE(root->children[0]->children['p' - 'a']->children['p' - 'a']->isEndOfWord);
-  CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->weight, 3);
+  CU_ASSERT_TRUE(
+      root->children[0]->children['p' - 'a']->children['p' - 'a']->isEndOfWord);
+  CU_ASSERT_EQUAL(
+      root->children[0]->children['p' - 'a']->children['p' - 'a']->weight, 3);
 
   for (int i = 0; i < ALPHABET_SIZE; i++)
-    CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->children[i], NULL);
+    CU_ASSERT_EQUAL(root->children[0]
+                        ->children['p' - 'a']
+                        ->children['p' - 'a']
+                        ->children[i],
+                    NULL);
 
   // test "ape" is correct
-  CU_ASSERT_TRUE(root->children[0]->children['p' - 'a']->children['e' - 'a']->isEndOfWord);
-  CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['e' - 'a']->weight, 4);
+  CU_ASSERT_TRUE(
+      root->children[0]->children['p' - 'a']->children['e' - 'a']->isEndOfWord);
+  CU_ASSERT_EQUAL(
+      root->children[0]->children['p' - 'a']->children['e' - 'a']->weight, 4);
 
   for (int i = 0; i < ALPHABET_SIZE; i++)
-    CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['e' - 'a']->children[i], NULL);
+    CU_ASSERT_EQUAL(root->children[0]
+                        ->children['p' - 'a']
+                        ->children['e' - 'a']
+                        ->children[i],
+                    NULL);
 }
 
 // Tests insertion of duplicate words
-void test_insert_duplicate_words() {
+void testInsertDuplicateWords() {
   insert(root, "app", 3);
   insert(root, "app", 4);
 
@@ -79,14 +96,20 @@ void test_insert_duplicate_words() {
   }
 
   // should update to new values
-  CU_ASSERT_TRUE(root->children[0]->children['p' - 'a']->children['p' - 'a']->isEndOfWord);
-  CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->weight, 4);
+  CU_ASSERT_TRUE(
+      root->children[0]->children['p' - 'a']->children['p' - 'a']->isEndOfWord);
+  CU_ASSERT_EQUAL(
+      root->children[0]->children['p' - 'a']->children['p' - 'a']->weight, 4);
 
   for (int i = 0; i < ALPHABET_SIZE; i++)
-    CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->children[i], NULL);
+    CU_ASSERT_EQUAL(root->children[0]
+                        ->children['p' - 'a']
+                        ->children['p' - 'a']
+                        ->children[i],
+                    NULL);
 }
 
-void test_insert_empty_string() {
+void testInsertEmptyString() {
   // reset trie
   teardown();
   setup();
@@ -96,7 +119,17 @@ void test_insert_empty_string() {
   assertLeafEmpty(root);
 }
 
-void test_insert_capital_word() {
+void testInsertInvalidString() {
+  // reset trie
+  teardown();
+  setup();
+
+  assertLeafEmpty(root);
+  insert(root, "!@#^#$", 1);
+  assertLeafEmpty(root);
+}
+
+void testInsertCapitalWord() {
   insert(root, "APP", 3);
 
   // skip a (0)
@@ -105,34 +138,47 @@ void test_insert_capital_word() {
   }
 
   // subtract index a due to offset
-  CU_ASSERT_TRUE(root->children[0]->children['p' - 'a']->children['p' - 'a']->isEndOfWord);
-  CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->weight, 3);
+  CU_ASSERT_TRUE(
+      root->children[0]->children['p' - 'a']->children['p' - 'a']->isEndOfWord);
+  CU_ASSERT_EQUAL(
+      root->children[0]->children['p' - 'a']->children['p' - 'a']->weight, 3);
 
   for (int i = 0; i < ALPHABET_SIZE; i++)
-    CU_ASSERT_EQUAL(root->children[0]->children['p' - 'a']->children['p' - 'a']->children[i], NULL);
+    CU_ASSERT_EQUAL(root->children[0]
+                        ->children['p' - 'a']
+                        ->children['p' - 'a']
+                        ->children[i],
+                    NULL);
 }
 
-void test_search_nonexistent_word() {
+void testSearchNonexistentWord() {
   char **suggestions = getSuggestions(root, "pro");
   CU_ASSERT_EQUAL(suggestions[0], NULL);
 }
 
-void test_search_inserted_word() {
+void testSearchInsertedWord() {
   insert(root, "app", 3);
 
   char **suggestions = getSuggestions(root, "ap");
   CU_ASSERT_EQUAL(suggestions[0], "app");
 }
 
-void add_tests_trie() {
+void addTrieTests() {
   CU_pSuite suite = CU_add_suite("Trie Tests", setup, teardown);
 
-  CU_add_test(suite, "test getNode()", test_getNode);
-  CU_add_test(suite, "test insert single word", test_insert_single_word);
-  CU_add_test(suite, "test insert multiple words", test_insert_multi_word);
-  CU_add_test(suite, "test insert duplicate words", test_insert_duplicate_words);
-  CU_add_test(suite, "test insert empty string", test_insert_empty_string);
-  CU_add_test(suite, "test insert capital word", test_insert_capital_word);
-  CU_add_test(suite, "test search non-existent word", test_search_nonexistent_word);
-  CU_add_test(suite, "test search inserted word", test_search_inserted_word);
+  // getNode
+  CU_add_test(suite, "test getNode()", testGetNode);
+
+  // insert
+  CU_add_test(suite, "test insert single word", testInsertSingleWord);
+  CU_add_test(suite, "test insert multiple words", testInsertMultiWord);
+  CU_add_test(suite, "test insert duplicate words", testInsertDuplicateWords);
+  CU_add_test(suite, "test insert empty string", testInsertEmptyString);
+  CU_add_test(suite, "test insert invalid word", testInsertInvalidString);
+  CU_add_test(suite, "test insert capital word", testInsertCapitalWord);
+
+  // search
+  CU_add_test(suite, "test search non-existent word",
+              testSearchNonexistentWord);
+  CU_add_test(suite, "test search inserted word", testSearchInsertedWord);
 }
