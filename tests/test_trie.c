@@ -171,15 +171,19 @@ void testGetLeaf() {
 }
 
 void testSearchNonexistentWord() {
-  char **suggestions = getSuggestions(root, "pro");
-  CU_ASSERT_EQUAL(suggestions[0], NULL);
+  Suggestion *suggestions = getSuggestions(root, "pro");
+  CU_ASSERT_EQUAL(suggestions, NULL);
 }
 
 void testSearchInsertedWord() {
   insert(root, "app", 3);
+  insert(root, "apo", 4);
+  insert(root, "api", 5);
 
-  char **suggestions = getSuggestions(root, "ap");
-  CU_ASSERT_EQUAL(suggestions[0], "app");
+  Suggestion *suggestions = getSuggestions(root, "ap");
+  CU_ASSERT_EQUAL(suggestions[0].suggestion, "api");
+  CU_ASSERT_EQUAL(suggestions[1].suggestion, "apo");
+  CU_ASSERT_EQUAL(suggestions[2].suggestion, "app");
 }
 
 void addTrieTests() {
