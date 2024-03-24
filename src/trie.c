@@ -115,7 +115,7 @@ Suggestion *getSuggestions(TrieNode *root, const char *prefix) {
 
   // TODO: restrict suggestions to first 5
 
-  return suggestions;
+  return NULL;
 }
 
 // Recursively free memory allocated for a trie

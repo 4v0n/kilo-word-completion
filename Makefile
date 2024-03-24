@@ -8,16 +8,18 @@ SRCS = src/terminal.c \
       src/editor_operations.c \
       src/search.c \
       src/syntax_highlighting.c \
-      src/trie.c
+      src/list.c \
+      src/trie.c 
 
-TESTS = tests/test_trie.c
+TESTS = tests/test_trie.c \
+        tests/test_list.c
 
 .PHONY: main test clean
 
 main: $(SRCS) src/main.c | build
 	$(CC) $(CFLAGS) $^ -o build/kilo
 
-test: $(SRCS) $(TESTS) tests/test_runner.c | build
+tests: $(SRCS) $(TESTS) tests/test_runner.c | build
 	$(CC) $(CFLAGS) $^ -o build/tests -I. -lcunit
 
 build:
