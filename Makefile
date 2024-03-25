@@ -9,6 +9,7 @@ SRCS = src/terminal.c \
       src/search.c \
       src/syntax_highlighting.c \
       src/list.c \
+      src/word_completion.c \
       src/trie.c 
 
 TESTS = tests/test_trie.c \

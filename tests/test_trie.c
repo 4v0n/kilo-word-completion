@@ -1,5 +1,6 @@
 #include <CUnit/Basic.h>
 #include <trie.h>
+#include <list.h>
 
 TrieNode *root;
 
@@ -171,7 +172,7 @@ void testGetLeaf() {
 }
 
 void testSearchNonexistentWord() {
-  Suggestion *suggestions = getSuggestions(root, "pro");
+  List *suggestions = getSuggestions(root, "pro");
   CU_ASSERT_EQUAL(suggestions, NULL);
 }
 
@@ -180,10 +181,10 @@ void testSearchInsertedWord() {
   insert(root, "apo", 4);
   insert(root, "api", 5);
 
-  Suggestion *suggestions = getSuggestions(root, "ap");
-  CU_ASSERT_EQUAL(suggestions[0].suggestion, "api");
-  CU_ASSERT_EQUAL(suggestions[1].suggestion, "apo");
-  CU_ASSERT_EQUAL(suggestions[2].suggestion, "app");
+  List *suggestions = getSuggestions(root, "ap");
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 0), "api");
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 1), "apo");
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 2), "app");
 }
 
 void addTrieTests() {

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <trie.h>
-
+#include <word_completion.h>
 
 // Initialises and returns the root node of a trie
 TrieNode *getNode() {
@@ -67,21 +67,29 @@ TrieNode *getTrieLeaf(TrieNode *root, const char *prefix) {
   return getTrieLeaf(root->children[index], prefix + 1);
 }
 
-void dfs(TrieNode* root, Suggestion suggestions[], int* count, char* currentWord, int depth) {
-  if (!root) return;
+void dfs(TrieNode *root, List *suggestions, int *count, char *currentWord,
+         int depth) {
+  if (!root)
+    return;
 
   // word hit
   if (root->isEndOfWord) {
     currentWord[depth] = '\0';
-    strcpy(suggestions[*count].suggestion, currentWord);
-    suggestions[*count].weight = root->weight;
+
+    Suggestion suggestion;
+    suggestion.word = (char *)malloc(strlen(currentWord) + 1);
+    strcpy(suggestion.word, currentWord);
+    suggestion.weight = root->weight;
+
+    addElement(suggestions, &suggestion, sizeof(suggestion));
+
     (*count)++;
   }
 
   // visit all children nodes
   for (int i = 0; i < ALPHABET_SIZE; i++) {
     if (root->children[i]) {
-      currentWord[depth] = 'a' + i; // append current char to word
+      currentWord[depth] = 'a' + i;  // append current char to word
       currentWord[depth + 1] = '\0'; // null terminate string
       dfs(root->children[i], suggestions, count, currentWord, depth + 1);
       currentWord[depth] = '\0'; // remove last char
@@ -89,33 +97,37 @@ void dfs(TrieNode* root, Suggestion suggestions[], int* count, char* currentWord
   }
 }
 
-int compare (const void* a, const void* b) {
-  Suggestion *suggestionA = (Suggestion*)a;
-  Suggestion *suggestionB = (Suggestion*)b;
+int compare(const void *a, const void *b) {
+  Suggestion *suggestionA = (Suggestion *)a;
+  Suggestion *suggestionB = (Suggestion *)b;
   return suggestionB->weight - suggestionA->weight;
 }
 
-Suggestion *getSuggestions(TrieNode *root, const char *prefix) {
+List *getSuggestions(TrieNode *root, const char *prefix) {
   TrieNode *leaf = getTrieLeaf(root, prefix);
-  if (!leaf) return NULL;
+  if (!leaf)
+    return NULL;
 
-  Suggestion suggestions[100];
+  List suggestions;
+  initList(&suggestions);
+
   int count = 0;
   char currentWord[100] = {0};
   strncpy(currentWord, prefix, strlen(prefix));
 
-  dfs(leaf, suggestions, &count, currentWord, strlen(prefix));
+  dfs(leaf, &suggestions, &count, currentWord, strlen(prefix));
+  sortList(&suggestions, compare);
 
-  qsort(suggestions, count, sizeof(Suggestion), compare);
+  List *result = malloc(sizeof(List));
+  initList(result);
 
   int numSuggestions = (count < MAX_SUGGESTIONS) ? count : MAX_SUGGESTIONS;
+  for (int i = 0; i < numSuggestions; i++) {
+    Suggestion currentSuggestion = *(Suggestion *)getListElement(&suggestions, i);
+    addElement(result, currentSuggestion.word, sizeof(currentSuggestion.word));
+  }
 
-  char **result = malloc(numSuggestions * sizeof(char*));
-  if (!result) return NULL;
-
-  // TODO: restrict suggestions to first 5
-
-  return NULL;
+  return result;
 }
 
 // Recursively free memory allocated for a trie

@@ -1,3 +1,6 @@
+#ifndef LIST_H
+#define LIST_H
+
 #include <stdlib.h>
 
 typedef struct Node {
@@ -18,3 +21,5 @@ void *getListElement(List *list, int index);
 void sortList(List* list, Comparator comp);
 
 void freeList(List *list);
+
+#endif
