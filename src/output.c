@@ -19,6 +19,7 @@
 #include <terminal.h>
 #include <time.h>
 #include <unistd.h>
+#include <word_completion.h>
 
 // empty buffer - constructor for abuf type
 #define ABUF_INIT {NULL, 0};
@@ -238,6 +239,13 @@ void editorRefreshScreen() {
   abAppend(&ab, "\x1b[H", 3);    // reposition cursor
 
   editorDrawRows(&ab);
+
+  // if the word completion engine is toggled, render row
+  engineConfig *ec = getEngineConfig();
+  if (ec->isActive) {
+    drawWordCompletionPromptRow(&ab);
+  }
+
   editorDrawStatusBar(&ab);
   editorDrawMessageBar(&ab);
 
