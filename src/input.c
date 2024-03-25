@@ -165,11 +165,15 @@ void editorProcessKeypress() {
     break;
 
   case CTRL_KEY('h'):
-    completeWord();
+    editorSetStatusMessage(HELP_MESSAGE);
+    break;
+
+  case CTRL_KEY('o'):
+    toggleWordCompletionEngine();
     break;
 
   case CTRL_KEY('\n'):
-    editorSetStatusMessage("Toggle word-complete");
+    completeWord();
     break;
 
   case BACKSPACE:

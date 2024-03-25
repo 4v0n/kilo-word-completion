@@ -13,6 +13,7 @@
 #include <io.h>
 #include <output.h>
 #include <terminal.h>
+#include <word_completion.h>
 
 #include <ctype.h>
 #include <data.h>
@@ -24,6 +25,8 @@
 int main(int argc, char *argv[]) {
   enableRawMode();
   initEditor();
+  initWordCompletionEngine();
+
   if (argc >= 2) {
     editorOpen(argv[1]);
   }
