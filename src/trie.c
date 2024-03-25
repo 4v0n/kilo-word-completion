@@ -44,8 +44,10 @@ void insert(TrieNode *root, const char *key, int weight) {
       return;
     }
 
-    if (!pCrawl->children[index])
+    if (!pCrawl->children[index]) {
       pCrawl->children[index] = getNode();
+    }
+    
     pCrawl = pCrawl->children[index];
     key++;
   }
@@ -67,10 +69,11 @@ TrieNode *getTrieLeaf(TrieNode *root, const char *prefix) {
   return getTrieLeaf(root->children[index], prefix + 1);
 }
 
-void dfs(TrieNode *root, List *suggestions, int *count, char *currentWord,
-         int depth) {
-  if (!root)
+void dfs(TrieNode *root, List *suggestions, int *count, char *currentWord, int depth) {
+
+  if (!root) {
     return;
+  }
 
   // word hit
   if (root->isEndOfWord) {
@@ -124,7 +127,7 @@ List *getSuggestions(TrieNode *root, const char *prefix) {
   int numSuggestions = (count < MAX_SUGGESTIONS) ? count : MAX_SUGGESTIONS;
   for (int i = 0; i < numSuggestions; i++) {
     Suggestion currentSuggestion = *(Suggestion *)getListElement(&suggestions, i);
-    addElement(result, currentSuggestion.word, sizeof(currentSuggestion.word));
+    addElement(result, currentSuggestion.word, strlen(currentSuggestion.word));
   }
 
   return result;

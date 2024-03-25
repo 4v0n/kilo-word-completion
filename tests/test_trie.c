@@ -126,7 +126,7 @@ void testInsertInvalidString() {
   setup();
 
   assertLeafEmpty(root);
-  insert(root, "!@#^#$", 1);
+  insert(root, "!@#^ #$", 1);
   assertLeafEmpty(root);
 }
 
@@ -176,15 +176,49 @@ void testSearchNonexistentWord() {
   CU_ASSERT_EQUAL(suggestions, NULL);
 }
 
-void testSearchInsertedWord() {
+void testSearchInsertedWordLessThan5() {
   insert(root, "app", 3);
   insert(root, "apo", 4);
   insert(root, "api", 5);
+  insert(root, "ban", 5);
+  insert(root, "pond", 7);
+  insert(root, "apple", 10);
 
   List *suggestions = getSuggestions(root, "ap");
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 0), "api");
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 1), "apo");
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 2), "app");
+
+  CU_ASSERT_EQUAL(suggestions->size, 4);
+
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 0), "apple");
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 1), "api");
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 2), "apo");
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 3), "app");
+}
+
+void testSearchInsertedWordMoreThan5() {
+  insert(root, "app", 3);
+  insert(root, "apo", 4);
+  insert(root, "api", 5);
+  insert(root, "ban", 5);
+  insert(root, "pond", 7);
+  insert(root, "apple", 10);
+  insert(root, "application", 9);
+  insert(root, "applied", 1);
+
+  List *suggestions = getSuggestions(root, "ap");
+
+  CU_ASSERT_EQUAL(suggestions->size, MAX_SUGGESTIONS);
+
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 0), "apple");
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 1), "application");
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 2), "api");
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 3), "apo");
+  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 4), "app");
+}
+
+void testSearchNonExistentPrefix() {
+  List *suggestions = getSuggestions(root, "ei");
+
+  CU_ASSERT_EQUAL(suggestions, NULL);
 }
 
 void addTrieTests() {
@@ -209,5 +243,7 @@ void addTrieTests() {
   // search
   CU_add_test(suite, "test search non-existent word",
               testSearchNonexistentWord);
-  CU_add_test(suite, "test search inserted word", testSearchInsertedWord);
+  CU_add_test(suite, "test search inserted word with 4/max potential suggestions", testSearchInsertedWordLessThan5);
+  CU_add_test(suite, "test search inserted word with more than max potential suggestions", testSearchInsertedWordMoreThan5);
+  CU_add_test(suite, "test search non existent word", testSearchNonExistentPrefix);
 }
