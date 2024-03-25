@@ -8,7 +8,7 @@ void initList(List *list) {
   list->size = 0;
 }
 
-Node *getListNode(List *list, int index) {
+Node *getListNode(const List *list, const int index) {
   Node *currentNode = list->head;
 
   if (index == 0) {
@@ -30,7 +30,7 @@ Node *getListNode(List *list, int index) {
   return NULL;
 }
 
-void addElement(List *list, void *data, size_t dataSize) {
+void addElement(List *list, const void *data, const size_t dataSize) {
   if (data == NULL)
     return;
 
@@ -48,7 +48,7 @@ void addElement(List *list, void *data, size_t dataSize) {
   list->size++;
 }
 
-void *getListElement(List *list, int index) {
+void *getListElement(const List *list, const int index) {
   Node *node = getListNode(list, index);
 
   if (node == NULL || index > (list->size - 1) || index < 0) {

@@ -16,8 +16,8 @@ typedef struct List {
 typedef int (*Comparator)(const void*, const void*);
 
 void initList(List *list);
-void addElement(List *list, void *data, size_t dataSize);
-void *getListElement(List *list, int index);
+void addElement(List *list, const void *data, const size_t dataSize);
+void *getListElement(const List *list, int index);
 void sortList(List* list, Comparator comp);
 
 void freeList(List *list);

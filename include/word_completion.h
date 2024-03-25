@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <list.h>
 
+#define WORD_COMPLETE_HELP "| Use < and > to choose suggestion "
+
 enum completionModes { PREFIX = 0, FUZZY };
 
 typedef struct Suggestion {
@@ -15,7 +17,7 @@ typedef struct Suggestion {
 typedef struct engineConfig {
   bool isActive; // state of word completion engine
   char *prefix; // current prefix typed by the user
-  List *suggestions; // list of suggestions for the prefix
+  List suggestions; // list of suggestions for the prefix
   int selection; // which suggestion is selected
   int mode; // which completion mode the engine is currently using
 } engineConfig;
