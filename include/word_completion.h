@@ -6,6 +6,7 @@ typedef struct Suggestion {
   int weight;
 } Suggestion;
 
+void completeWord();
 void freeSuggestion(Suggestion *suggestion);
 
 #endif

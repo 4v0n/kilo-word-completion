@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <terminal.h>
 #include <unistd.h>
+#include <word_completion.h>
 
 /*** defines ***/
 #define CTRL_KEY(k) ((k) & 0x1f) // bitwise AND character with 00011111
@@ -46,15 +47,17 @@ char *editorPrompt(char *prompt, void (*callback)(char *, int)) {
 
     } else if (c == '\x1b') { // esc
       editorSetStatusMessage("");
-      if (callback) callback(buf, c);
+      if (callback)
+        callback(buf, c);
       free(buf);
       return NULL;
-      
+
     } else if (c == '\r') { // enter
       if (buflen != 0) {
         // end input, call callback and return
         editorSetStatusMessage("");
-        if (callback) callback(buf, c);
+        if (callback)
+          callback(buf, c);
         return buf;
       }
     } else if (!iscntrl(c) && c < 128) { // normal characters
@@ -68,7 +71,8 @@ char *editorPrompt(char *prompt, void (*callback)(char *, int)) {
     }
 
     // call callback with current buf
-    if (callback) callback(buf, c);
+    if (callback)
+      callback(buf, c);
   }
 }
 
@@ -124,7 +128,7 @@ void editorProcessKeypress() {
 
   switch (c) {
 
-  case '\r': // enter
+  case '\r':               // enter
     editorInsertNewLine(); // newline
     break;
 
@@ -161,7 +165,11 @@ void editorProcessKeypress() {
     break;
 
   case CTRL_KEY('h'):
-    editorSetStatusMessage(HELP_MESSAGE);
+    completeWord();
+    break;
+
+  case CTRL_KEY('\n'):
+    editorSetStatusMessage("Toggle word-complete");
     break;
 
   case BACKSPACE:
