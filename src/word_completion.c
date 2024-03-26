@@ -153,7 +153,7 @@ void completeWord() {
 }
 
 char *getWordAtIndex(const char *str, const int index) {
-  if (index < 0) {
+  if (index < 0  || str == NULL) {
     return NULL;
   }
 
@@ -163,12 +163,12 @@ char *getWordAtIndex(const char *str, const int index) {
     start--;
   }
 
-  if ((index - start) > MAX_PREFIX_LENGTH) {
+  if ((index - start) > MAX_PREFIX_LENGTH || start == index) {
     return NULL;
   }
 
   if (index == (int)strlen(str) || str[index + 1] == '\0' ||
-      str[index + 1] == ' ') {
+      str[index + 1] == '\000') {
     char *word = malloc(sizeof(char) * (index - start + 2));
     strncpy(word, str + start, index - start + 1);
     word[index - start + 1] = '\0';
@@ -180,6 +180,11 @@ char *getWordAtIndex(const char *str, const int index) {
 
 void updateEC() {
   struct editorConfig *E = getEditorConfig();
+
+  if (E->row == NULL) {
+    return;
+  }
+
   int pos = E->cx;
   erow row = E->row[E->cy];
   char *rowString = row.chars;

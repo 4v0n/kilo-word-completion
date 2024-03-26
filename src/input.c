@@ -152,16 +152,19 @@ void editorProcessKeypress() {
 
   case HOME_KEY:
     E->cx = 0;
+    updateEC();
     break;
 
   case END_KEY:
     // navigate cursor to end of row
     if (E->cy < E->numrows)
       E->cx = E->row[E->cy].size;
+    updateEC();
     break;
 
   case CTRL_KEY('f'):
     editorFind();
+    updateEC();
     break;
 
   case CTRL_KEY('h'):
@@ -186,6 +189,7 @@ void editorProcessKeypress() {
     if (c == DEL_KEY)
       editorMoveCursor(ARROW_RIGHT);
     editorDelChar();
+    updateEC();
     break;
 
   case PAGE_UP:
@@ -202,6 +206,7 @@ void editorProcessKeypress() {
     while (times--)
       // arrow up or arrow down until bottom/top of terminal
       editorMoveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
+    updateEC();
   } break;
 
   case ARROW_UP:
@@ -209,6 +214,7 @@ void editorProcessKeypress() {
   case ARROW_LEFT:
   case ARROW_RIGHT:
     editorMoveCursor(c);
+    updateEC();
     break;
 
   case CTRL_KEY('l'):
@@ -218,7 +224,6 @@ void editorProcessKeypress() {
   default:
     editorInsertChar(c);
     updateEC();
-
     break;
   }
 
