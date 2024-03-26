@@ -33,20 +33,21 @@ void toUpperCase(char *str) {
 int drawSuggestionsString(struct abuf *ab, int maxlen) {
   int len = 0;
 
-  char *string = malloc((maxlen*2)*sizeof(char));
+  char *string = malloc((maxlen * 2) * sizeof(char));
+  string[0] = '\0';
+
   if (strlen(EC.prefix) == 0) {
-    strcpy(EC.prefix, "(NONE)");
+    strcpy(string, "(NONE) -> ");
+  } else {
+    snprintf(string, maxlen * 2, "%s -> ", EC.prefix);
   }
 
-  strcat(string, EC.prefix);
-  strcat(string, " -> ");
-
-  char *completion = (char*)getListElement(&EC.suggestions, EC.selection);
+  char *completion = (char *)getListElement(&EC.suggestions, EC.selection);
   strcat(string, completion);
   strcat(string, " | Suggestions: ");
 
   for (int i = 0; i < EC.suggestions.size; i++) {
-    char *s = (char*)getListElement(&EC.suggestions, i);
+    char *s = (char *)getListElement(&EC.suggestions, i);
 
     if (EC.selection == i) {
       strcat(string, "<");
@@ -73,10 +74,12 @@ void drawPromptString(struct abuf *ab) {
   struct editorConfig *E = getEditorConfig();
 
   char *modeString = modeToString(EC.mode);
-  char *rightString = malloc(sizeof(modeString) + sizeof(WORD_COMPLETE_HELP) + 1);
-  rightString = strcat(rightString, WORD_COMPLETE_HELP);
-  rightString = strcat(rightString, modeString);
-  
+  size_t rightStringSize = strlen(WORD_COMPLETE_HELP) + strlen(modeString) +
+                           2; // +1 for null-terminator, +1 for potential space
+  char *rightString = malloc(rightStringSize);
+  snprintf(rightString, rightStringSize, "%s %s", WORD_COMPLETE_HELP,
+           modeString);
+
   int rlen = strlen(rightString);
   int maxlen = E->screencols - rlen;
 
@@ -91,6 +94,8 @@ void drawPromptString(struct abuf *ab) {
       len++;
     }
   }
+
+  free(rightString); // Avoid memory leak
 }
 
 void drawWordCompletionPromptRow(struct abuf *ab) {
@@ -121,7 +126,8 @@ void freeSuggestion(Suggestion *suggestion) {
 
 void initWordCompletionEngine() {
   EC.isActive = false;
-  EC.prefix = malloc(sizeof(char));
+  EC.prefix = malloc(2 * sizeof(char));
+  EC.prefix[0] = '\0';
 
   initList(&EC.suggestions);
 
