@@ -130,6 +130,10 @@ char *getWordAtIndex(const char *str, const int index) {
     start--;
   }
 
+  if ((index - start) > MAX_PREFIX_LENGTH) {
+    return NULL;
+  }
+
   if (index == (int)strlen(str) || str[index + 1] == '\0' ||
       str[index + 1] == ' ') {
     char *word = malloc(sizeof(char) * (index - start + 2));

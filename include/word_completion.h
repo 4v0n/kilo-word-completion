@@ -5,7 +5,8 @@
 #include <stdbool.h>
 #include <list.h>
 
-#define WORD_COMPLETE_HELP "| Use < and > to choose suggestion "
+#define WORD_COMPLETE_HELP "| choose with ctrl+arrows "
+#define MAX_PREFIX_LENGTH 5
 
 enum completionModes { PREFIX = 0, FUZZY };
 
