@@ -212,6 +212,12 @@ void editorProcessKeypress() {
 
   default:
     editorInsertChar(c);
+
+    engineConfig *EC =  getEngineConfig();
+    if (EC->isActive) {
+      updateEC();
+    }
+
     break;
   }
 

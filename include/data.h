@@ -119,7 +119,7 @@ struct editorConfig {
   int screenrows; // no rows in terminal
   int screencols; // no columns in terminal
   int numrows;    // number of rows in the editor
-  erow *row;      // row being edited
+  erow *row;      // row being edited - access with [cy]
   int dirty;      // whether file is changed
   char *filename;
   char statusmsg[80];    // editor status message

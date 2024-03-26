@@ -119,6 +119,46 @@ void completeWord() {
   // complete word
 }
 
+char *getWordAtIndex(const char *str, const int index) {
+  if (index < 0) {
+    return NULL;
+  }
+
+  int start = index;
+
+  while (start > 0 && str[start - 1] != ' ') {
+    start--;
+  }
+
+  if (index == (int)strlen(str) || str[index + 1] == '\0' ||
+      str[index + 1] == ' ') {
+    char *word = malloc(sizeof(char) * (index - start + 2));
+    strncpy(word, str + start, index - start + 1);
+    word[index - start + 1] = '\0';
+
+    return word;
+  }
+  return NULL;
+}
+
+void updateEC() {
+  struct editorConfig *E = getEditorConfig();
+  int pos = E->cx;
+  erow row = E->row[E->cy];
+  char *rowString = row.chars;
+
+  free(EC.prefix);
+
+  char *word = getWordAtIndex(rowString, pos);
+
+  if (word != NULL) {
+    EC.prefix = word;
+  } else {
+    EC.prefix = malloc(1 * sizeof(char));
+    EC.prefix[0] = '\0';
+  }
+}
+
 void freeSuggestion(Suggestion *suggestion) {
   free(suggestion->word);
   free(suggestion);

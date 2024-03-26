@@ -28,6 +28,8 @@ void drawWordCompletionPromptRow(struct abuf *ab);
 
 void toggleWordCompletionEngine();
 void completeWord();
+void updateEC();
+
 void initWordCompletionEngine();
 
 void freeSuggestion(Suggestion *suggestion);
