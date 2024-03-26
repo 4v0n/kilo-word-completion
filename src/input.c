@@ -176,6 +176,11 @@ void editorProcessKeypress() {
     completeWord();
     break;
 
+  case CTRL_KEY('a'):
+  case CTRL_KEY('d'):
+    wordCompletionChooseCompletion(c);
+    break;
+
   case BACKSPACE:
   case DEL_KEY:
     if (c == DEL_KEY)

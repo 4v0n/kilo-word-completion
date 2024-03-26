@@ -7,6 +7,8 @@
 #include <terminal.h>
 #include <word_completion.h>
 
+#define CTRL_KEY(k) ((k) & 0x1f)
+
 struct engineConfig EC;
 
 struct engineConfig *getEngineConfig() { return &EC; }
@@ -112,6 +114,20 @@ void toggleWordCompletionEngine() {
     getEditorConfig()->screenrows--;
   } else {
     getEditorConfig()->screenrows++;
+  }
+}
+
+void wordCompletionChooseCompletion(char c) {
+  if (c == CTRL_KEY('a')) {
+    EC.selection--;
+  } else {
+    EC.selection++;
+  }
+
+  if (EC.selection > (EC.suggestions.size - 1)) {
+    EC.selection = 0;
+  } else if (EC.selection < 0) {
+    EC.selection = EC.suggestions.size - 1;
   }
 }
 
