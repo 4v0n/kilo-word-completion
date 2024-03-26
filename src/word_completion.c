@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <editor_operations.h>
 #include <output.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -6,7 +7,6 @@
 #include <string.h>
 #include <terminal.h>
 #include <word_completion.h>
-#include <editor_operations.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -133,12 +133,11 @@ void wordCompletionChooseCompletion(char c) {
 }
 
 void completeWord() {
-
   if (!EC.isActive) {
     return;
   }
 
-  char *word = (char*)getListElement(&EC.suggestions, EC.selection);
+  char *word = (char *)getListElement(&EC.suggestions, EC.selection);
 
   for (int i = 0; i < ((int)strlen(word)); i++) {
     if (i > ((int)strlen(EC.prefix) - 1)) {
@@ -147,6 +146,10 @@ void completeWord() {
   }
 
   editorInsertChar(' ');
+
+  free(EC.prefix);
+  EC.prefix = malloc(1 * sizeof(char));
+  EC.prefix[0] = '\0';
 }
 
 char *getWordAtIndex(const char *str, const int index) {
