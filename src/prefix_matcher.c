@@ -1,8 +1,12 @@
 #include "prefix_matcher.h"
+#include <trie.h>
+
+TrieNode root;
 
 List pmGetSuggestions(const char *word) {
   return;
 }
 
-void initPM() {
+bool initPM() {
+  return false;
 }

@@ -1,19 +1,21 @@
 #include <ctype.h>
 #include <editor_operations.h>
 #include <output.h>
+#include <prefix_matcher.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <terminal.h>
 #include <word_completion.h>
-#include <prefix_matcher.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
 struct engineConfig EC;
 
 struct engineConfig *getEngineConfig() { return &EC; }
+
+char *statusmsg;
 
 char *modeToString(int mode) {
   switch (mode) {
@@ -82,11 +84,10 @@ void drawPromptString(struct abuf *ab) {
   struct editorConfig *E = getEditorConfig();
 
   char *modeString = modeToString(EC.mode);
-  size_t rightStringSize = strlen(WORD_COMPLETE_HELP) + strlen(modeString) +
+  size_t rightStringSize = strlen(statusmsg) + strlen(modeString) +
                            2; // +1 for null-terminator, +1 for potential space
   char *rightString = malloc(rightStringSize);
-  snprintf(rightString, rightStringSize, "%s %s", WORD_COMPLETE_HELP,
-           modeString);
+  snprintf(rightString, rightStringSize, "%s %s", statusmsg, modeString);
 
   int rlen = strlen(rightString);
   int maxlen = E->screencols - rlen;
@@ -177,8 +178,7 @@ char *getWordAtIndex(const char *str, const int index) {
     return NULL;
   }
 
-  if (index == (int)strlen(str) || str[index] == '\0' ||
-      str[index] == ' ') {
+  if (index == (int)strlen(str) || str[index] == '\0' || str[index] == ' ') {
     char *word = malloc(sizeof(char) * (index - start + 2));
     strncpy(word, str + start, index - start + 1);
     word[index - start + 1] = '\0';
@@ -191,8 +191,7 @@ char *getWordAtIndex(const char *str, const int index) {
 void fillSuggestions(const char *word) {
 
   List suggestions;
-  switch (EC.mode)
-  {
+  switch (EC.mode) {
   case PREFIX:
     pmGetSuggestions(word);
     break;
@@ -231,15 +230,28 @@ void freeSuggestion(Suggestion *suggestion) {
   free(suggestion);
 }
 
-void initMatcher() {
-  switch (EC.mode)
-  {
+bool initMatcher() {
+  bool working = false;
+
+  switch (EC.mode) {
   case PREFIX:
-    initPM();
+    working = initPM();
     break;
   case FUZZY:
-    // init fuzzy matcher
+    // working = initFM();
     break;
+  }
+
+  if (statusmsg != NULL) {
+    free(statusmsg);
+  }
+
+  if (working) {
+    statusmsg = malloc(strlen("\0") + 1);
+    strcpy(statusmsg, "\0");
+  } else {
+    statusmsg = malloc(strlen("Failed to load dataset") + 1); 
+        strcpy(statusmsg, "Failed to load dataset");
   }
 }
 
