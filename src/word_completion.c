@@ -7,6 +7,7 @@
 #include <string.h>
 #include <terminal.h>
 #include <word_completion.h>
+#include <prefix_matcher.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -164,6 +165,11 @@ char *getWordAtIndex(const char *str, const int index) {
   int start = index;
 
   while (start > 0 && str[start - 1] != ' ') {
+
+    if (str[start] == 9) {
+      return NULL; // do not deal with tabs
+    }
+
     start--;
   }
 
@@ -171,8 +177,8 @@ char *getWordAtIndex(const char *str, const int index) {
     return NULL;
   }
 
-  if (index == (int)strlen(str) || str[index + 1] == '\0' ||
-      str[index + 1] == '\000') {
+  if (index == (int)strlen(str) || str[index] == '\0' ||
+      str[index] == ' ') {
     char *word = malloc(sizeof(char) * (index - start + 2));
     strncpy(word, str + start, index - start + 1);
     word[index - start + 1] = '\0';
@@ -180,6 +186,20 @@ char *getWordAtIndex(const char *str, const int index) {
     return word;
   }
   return NULL;
+}
+
+void fillSuggestions(const char *word) {
+
+  List suggestions;
+  switch (EC.mode)
+  {
+  case PREFIX:
+    pmGetSuggestions(word);
+    break;
+  case FUZZY:
+    // execute fuzzy match code
+    break;
+  }
 }
 
 void updateEC() {
@@ -199,7 +219,7 @@ void updateEC() {
 
   if (word != NULL) {
     EC.prefix = word;
-    // getSuggestions(word);
+    fillSuggestions(word);
   } else {
     EC.prefix = malloc(1 * sizeof(char));
     EC.prefix[0] = '\0';
@@ -211,6 +231,18 @@ void freeSuggestion(Suggestion *suggestion) {
   free(suggestion);
 }
 
+void initMatcher() {
+  switch (EC.mode)
+  {
+  case PREFIX:
+    initPM();
+    break;
+  case FUZZY:
+    // init fuzzy matcher
+    break;
+  }
+}
+
 void initWordCompletionEngine() {
   EC.isActive = false;
   EC.prefix = malloc(2 * sizeof(char));
@@ -220,4 +252,6 @@ void initWordCompletionEngine() {
 
   EC.selection = 0;
   EC.mode = PREFIX;
+
+  initMatcher();
 }
