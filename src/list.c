@@ -89,7 +89,7 @@ void sortList(List *list, Comparator comp) {
   list->head = sorted;
 }
 
-void freeAllNodes(List* list) {
+void emptyList(List* list) {
     Node* current = list->head;
     while (current != NULL) {
         Node* next = current->next;
@@ -102,6 +102,6 @@ void freeAllNodes(List* list) {
 }
 
 void freeList(List *list) {
-  freeAllNodes(list);
+  emptyList(list);
   free(list);
 }

@@ -45,22 +45,26 @@ int drawSuggestionsString(struct abuf *ab, int maxlen) {
     snprintf(string, maxlen * 2, "%s -> ", EC.prefix);
   }
 
-  char *completion = (char *)getListElement(&EC.suggestions, EC.selection);
-  strcat(string, completion);
-  strcat(string, " | Suggestions: ");
+  if (EC.suggestions.size > 0) {
+    char *completion = (char *)getListElement(&EC.suggestions, EC.selection);
+    strcat(string, completion);
+    strcat(string, " | Suggestions: ");
 
-  for (int i = 0; i < EC.suggestions.size; i++) {
-    char *s = (char *)getListElement(&EC.suggestions, i);
+    for (int i = 0; i < EC.suggestions.size; i++) {
+      char *s = (char *)getListElement(&EC.suggestions, i);
 
-    if (EC.selection == i) {
-      strcat(string, "<");
-      strcat(string, s);
-      strcat(string, ">");
-    } else {
-      strcat(string, s);
+      if (EC.selection == i) {
+        strcat(string, "<");
+        strcat(string, s);
+        strcat(string, ">");
+      } else {
+        strcat(string, s);
+      }
+
+      strcat(string, " ");
     }
-
-    strcat(string, " ");
+  } else {
+    strcat(string, " NO SUGGESTIONS");
   }
 
   len = strlen(string);
@@ -133,7 +137,7 @@ void wordCompletionChooseCompletion(char c) {
 }
 
 void completeWord() {
-  if (!EC.isActive) {
+  if (!EC.isActive || EC.suggestions.size == 0) {
     return;
   }
 
@@ -153,7 +157,7 @@ void completeWord() {
 }
 
 char *getWordAtIndex(const char *str, const int index) {
-  if (index < 0  || str == NULL) {
+  if (index < 0 || str == NULL) {
     return NULL;
   }
 
@@ -195,6 +199,7 @@ void updateEC() {
 
   if (word != NULL) {
     EC.prefix = word;
+    // getSuggestions(word);
   } else {
     EC.prefix = malloc(1 * sizeof(char));
     EC.prefix[0] = '\0';
@@ -212,13 +217,6 @@ void initWordCompletionEngine() {
   EC.prefix[0] = '\0';
 
   initList(&EC.suggestions);
-
-  // temporary
-  addElement(&EC.suggestions, "thing1", sizeof("thing1"));
-  addElement(&EC.suggestions, "thing2", sizeof("thing2"));
-  addElement(&EC.suggestions, "thing3", sizeof("thing3"));
-  addElement(&EC.suggestions, "thing4", sizeof("thing4"));
-  addElement(&EC.suggestions, "thing5", sizeof("thing5"));
 
   EC.selection = 0;
   EC.mode = PREFIX;
