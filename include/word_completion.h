@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <list.h>
 
-#define WORD_COMPLETE_HELP "| choose with ctrl + a/d"
+#define WORD_COMPLETE_HELP "complete with ctrl+enter | select with ctrl+a/d | switch mode with ctrl+w/d"
 #define MAX_PREFIX_LENGTH 5
 
 enum completionModes { PREFIX = 0, FUZZY };

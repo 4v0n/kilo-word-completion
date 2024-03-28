@@ -168,6 +168,12 @@ void editorProcessKeypress() {
     break;
 
   case CTRL_KEY('h'):
+
+    if (getEngineConfig()->isActive) {
+      editorSetStatusMessage(WORD_COMPLETE_HELP);
+      break;
+    }
+
     editorSetStatusMessage(HELP_MESSAGE);
     break;
 
