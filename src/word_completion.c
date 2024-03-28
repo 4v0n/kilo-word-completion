@@ -163,14 +163,13 @@ char *getWordAtIndex(const char *str, const int index) {
     return NULL;
   }
 
+  if (str[0] == '\t') {
+    return NULL;
+  }
+
   int start = index;
 
   while (start > 0 && str[start - 1] != ' ') {
-
-    if (str[start] == 9) {
-      return NULL; // do not deal with tabs
-    }
-
     start--;
   }
 
