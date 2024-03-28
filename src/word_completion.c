@@ -158,8 +158,8 @@ void completeWord() {
   EC.prefix[0] = '\0';
 }
 
-char *getWordAtIndex(const char *str, const int index) {
-  if (index < 0 || str == NULL) {
+char *getWordAtIndex(const char *str, const int index, int rowsize) {
+  if (index < 0 || str == NULL || rowsize == 0) {
     return NULL;
   }
 
@@ -213,7 +213,7 @@ void updateEC() {
 
   free(EC.prefix);
 
-  char *word = getWordAtIndex(rowString, pos);
+  char *word = getWordAtIndex(rowString, pos, row.size);
 
   if (word != NULL) {
     EC.prefix = word;
