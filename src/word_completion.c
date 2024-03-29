@@ -158,18 +158,24 @@ void completeWord() {
   EC.prefix[0] = '\0';
 }
 
+bool isAlphabetChar(const char c) {
+  int val;
+  if (isupper(c)) {
+    val = tolower(c) - 'a';
+  } else {
+    val = c - 'a';
+  }
+
+  return (val >= 0 && val < 26);
+}
+
 char *getWordAtIndex(const char *str, const int index, int rowsize) {
   if (index < 0 || str == NULL || rowsize == 0) {
     return NULL;
   }
-
-  if (str[0] == '\t') {
-    return NULL;
-  }
-
   int start = index;
 
-  while (start > 0 && str[start - 1] != ' ') {
+  while (start > 0 && isAlphabetChar(str[start - 1])) {
     start--;
   }
 
@@ -177,10 +183,11 @@ char *getWordAtIndex(const char *str, const int index, int rowsize) {
     return NULL;
   }
 
-  if (index == (int)strlen(str) || str[index] == '\0' || str[index] == ' ') {
-    char *word = malloc(sizeof(char) * (index - start + 2));
-    strncpy(word, str + start, index - start + 1);
-    word[index - start + 1] = '\0';
+  if (index == (int)strlen(str) || !isAlphabetChar(str[index])) {
+    int length = index - start;
+    char *word = (char *)malloc(length + 1);
+    strncpy(word, str + start, length);
+    word[length] = '\0';
 
     return word;
   }
@@ -249,8 +256,8 @@ bool initMatcher() {
     statusmsg = malloc(strlen("\0") + 1);
     strcpy(statusmsg, "\0");
   } else {
-    statusmsg = malloc(strlen("Failed to load dataset") + 1); 
-        strcpy(statusmsg, "Failed to load dataset");
+    statusmsg = malloc(strlen("Failed to load dataset") + 1);
+    strcpy(statusmsg, "Failed to load dataset");
   }
 }
 
