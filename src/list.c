@@ -34,7 +34,7 @@ Node *getListNode(const List *list, const int index) {
 }
 
 void addElement(List *list, const void *data, const size_t dataSize) {
-  if (data == NULL || list == NULL || dataSize == NULL)
+  if (data == NULL || list == NULL || dataSize <= 0)
     return;
 
   Node *newNode = (Node *)malloc(sizeof(Node));

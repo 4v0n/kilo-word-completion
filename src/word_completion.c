@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <terminal.h>
-#include <word_completion.h>
 #include <util.h>
+#include <word_completion.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -147,7 +147,6 @@ void toggleWordCompletionEngine() {
   }
 }
 
-
 // Handle selection of word suggestions
 void wordCompletionChooseCompletion(char c) {
   if (c == CTRL_KEY('a')) {
@@ -217,15 +216,26 @@ char *getWordAtIndex(const char *str, const int index, int rowsize) {
 
 // Gets suggestions based on prefix and load into EC
 void fillSuggestions(const char *word) {
+  if (!EC.isActive) {
+    return;
+  }
 
-  List suggestions;
+  List *suggestions;
+
   switch (EC.mode) {
   case PREFIX:
-    pmGetSuggestions(word);
+    suggestions = pmGetSuggestions(word);
     break;
   case FUZZY:
     // execute fuzzy match code
     break;
+  }
+
+  if (suggestions) {
+    emptyList(&EC.suggestions);
+    EC.suggestions.head = suggestions->head;
+    EC.suggestions.size = suggestions->size;
+    free(suggestions);
   }
 }
 
@@ -244,6 +254,8 @@ void updateEC() {
 
   // free prefix
   free(EC.prefix);
+
+  EC.selection = 0;
 
   char *word = getWordAtIndex(rowString, pos, row.size);
 
@@ -286,6 +298,8 @@ bool initMatcher() {
     statusmsg = malloc(strlen("Failed to load dataset") + 1);
     strcpy(statusmsg, "Failed to load dataset");
   }
+
+  return working;
 }
 
 // initialises word completion engine

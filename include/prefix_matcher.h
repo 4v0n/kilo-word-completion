@@ -4,7 +4,7 @@
 #include <list.h>
 #include <stdbool.h>
 
-List pmGetSuggestions(const char *word);
+List *pmGetSuggestions(const char *word);
 bool initPM();
 void destroyPM();
 

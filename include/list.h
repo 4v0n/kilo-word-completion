@@ -13,13 +13,13 @@ typedef struct List {
   int size;
 } List;
 
-typedef int (*Comparator)(const struct Node*, const struct Node*);
+typedef int (*Comparator)(const struct Node *, const struct Node *);
 
 List *createList();
 void addElement(List *list, const void *data, const size_t dataSize);
 void *getListElement(const List *list, int index);
-void sortList(List* list, Comparator comp);
-
+void sortList(List *list, Comparator comp);
+void emptyList(List *list);
 void freeList(List *list);
 
 #endif

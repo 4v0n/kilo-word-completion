@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <trie.h>
-#include <word_completion.h>
 #include <util.h>
+#include <word_completion.h>
 
 // Initialises and returns the root node of a trie
 TrieNode *getNode() {
@@ -54,19 +54,20 @@ void insert(struct TrieNode *root, const char *key, int weight) {
 }
 
 TrieNode *getTrieLeaf(TrieNode *root, const char *prefix) {
-  if (*prefix == '\0') {
+  if (prefix == NULL || *prefix == '\0') {
     return root; // reached end of prefix
   }
 
   int index = *prefix - 'a';
-  if (index < 0 || index >= ALPHABET_SIZE || root->children[index] == NULL) {
+  if (index < 0 || index >= ALPHABET_SIZE || root->children[index] == NULL) { 
     return NULL; // abort if out of bounds / not part of trie
   }
 
-  return getTrieLeaf(root->children[index], prefix + 1);
+  return getTrieLeaf(root->children[index], prefix + 1); 
 }
 
-void dfs(TrieNode *root, List *suggestions, int *count, char *currentWord, int depth) {
+void dfs(TrieNode *root, List *suggestions, int *count, char *currentWord,
+         int depth) {
 
   if (!root) {
     return;
@@ -104,25 +105,35 @@ int compare(const Node *a, const Node *b) {
 }
 
 List *getSuggestions(TrieNode *root, const char *prefix) {
-  TrieNode *leaf = getTrieLeaf(root, prefix);
+  char lowerPrefix[MAX_PREFIX_LENGTH] = {0};
+
+  // Convert prefix to lowercase
+  for (int i = 0; prefix[i] != '\0'; i++) {
+    lowerPrefix[i] = tolower(prefix[i]);
+  }
+
+  TrieNode *leaf = getTrieLeaf(root, lowerPrefix);
   if (!leaf)
     return NULL;
 
   List suggestions = *createList();
-
   int count = 0;
   char currentWord[100] = {0};
-  strncpy(currentWord, prefix, strlen(prefix));
 
-  dfs(leaf, &suggestions, &count, currentWord, strlen(prefix));
+  // Use the lowercase prefix
+  strncpy(currentWord, lowerPrefix, strlen(lowerPrefix));
+
+  dfs(leaf, &suggestions, &count, currentWord, strlen(lowerPrefix));
   sortList(&suggestions, compare);
 
   List *result = createList();
-
   int numSuggestions = (count < MAX_SUGGESTIONS) ? count : MAX_SUGGESTIONS;
+
   for (int i = 0; i < numSuggestions; i++) {
-    Suggestion currentSuggestion = *(Suggestion *)getListElement(&suggestions, i);
-    addElement(result, currentSuggestion.word, strlen(currentSuggestion.word) + 1);
+    Suggestion currentSuggestion =
+        *(Suggestion *)getListElement(&suggestions, i);
+    addElement(result, currentSuggestion.word,
+               strlen(currentSuggestion.word) + 1);
   }
 
   return result;

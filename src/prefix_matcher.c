@@ -9,7 +9,14 @@
 
 TrieNode root;
 
-List pmGetSuggestions(const char *word) { return; }
+List *pmGetSuggestions(const char *word) {
+  List *suggestions = getSuggestions(&root, word);
+  if (suggestions != NULL) {
+    return suggestions;
+  }
+
+  return NULL;
+}
 
 bool initPM() {
   root = *getNode();
@@ -27,10 +34,8 @@ bool initPM() {
         // Check if the word and count are successfully parsed
         if (sscanf(buffer, "%[^,],%d", word, &count) == 2) {
             insert(&root, word, count);
-
             free(word);
         } else {
-            // Handle parsing error or free the allocated memory if it's not used
             free(word);
         }
     }
