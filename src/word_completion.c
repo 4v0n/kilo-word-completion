@@ -12,6 +12,7 @@
 #include <string.h>
 #include <terminal.h>
 #include <word_completion.h>
+#include <util.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -183,18 +184,6 @@ void completeWord() {
   free(EC.prefix);
   EC.prefix = malloc(1 * sizeof(char));
   EC.prefix[0] = '\0';
-}
-
-// Returns whether the char is an alphabet 
-bool isAlphabetChar(const char c) {
-  int val;
-  if (isupper(c)) {
-    val = tolower(c) - 'a';
-  } else {
-    val = c - 'a';
-  }
-
-  return (val >= 0 && val < 26);
 }
 
 char *getWordAtIndex(const char *str, const int index, int rowsize) {

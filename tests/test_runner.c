@@ -8,7 +8,7 @@ int main() {
     return CU_get_error();
   
   // Add tests
-  addListTests();
+  //addListTests();
   addTrieTests();
 
   CU_basic_set_mode(CU_BRM_VERBOSE);

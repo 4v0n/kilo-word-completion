@@ -1,6 +1,6 @@
 #include <CUnit/Basic.h>
-#include <trie.h>
 #include <list.h>
+#include <trie.h>
 
 TrieNode *root;
 
@@ -126,7 +126,8 @@ void testInsertInvalidString() {
   setup();
 
   assertLeafEmpty(root);
-  insert(root, "!@#^ #$", 1);
+  insert(root, "!@#^ #$", strlen("!@#^ #$") + 1);
+  insert(root, "this is a word with spaces", strlen("this is a word with spaces") + 1);
   assertLeafEmpty(root);
 }
 
@@ -188,10 +189,10 @@ void testSearchInsertedWordLessThan5() {
 
   CU_ASSERT_EQUAL(suggestions->size, 4);
 
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 0), "apple");
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 1), "api");
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 2), "apo");
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 3), "app");
+  CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 0), "apple");
+  CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 1), "api");
+  CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 2), "apo");
+  CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 3), "app");
 }
 
 void testSearchInsertedWordMoreThan5() {
@@ -208,11 +209,11 @@ void testSearchInsertedWordMoreThan5() {
 
   CU_ASSERT_EQUAL(suggestions->size, MAX_SUGGESTIONS);
 
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 0), "apple");
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 1), "application");
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 2), "api");
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 3), "apo");
-  CU_ASSERT_STRING_EQUAL((char*)getListElement(suggestions, 4), "app");
+  CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 0), "apple");
+  CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 1), "application");
+  CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 2), "api");
+  CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 3), "apo");
+  CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 4), "app");
 }
 
 void testSearchNonExistentPrefix() {
@@ -237,13 +238,20 @@ void addTrieTests() {
 
   // getTrieLeaf
   CU_add_test(suite, "test get non existent trie leaf", testGetNonexistentLeaf);
-  CU_add_test(suite, "test get out of bounds / invalid trie leaf", testGetLeafOutOfBounds);
+  CU_add_test(suite, "test get out of bounds / invalid trie leaf",
+              testGetLeafOutOfBounds);
   CU_add_test(suite, "test get trie leaf", testGetLeaf);
 
   // search
   CU_add_test(suite, "test search non-existent word",
               testSearchNonexistentWord);
-  CU_add_test(suite, "test search inserted word with 4/max potential suggestions", testSearchInsertedWordLessThan5);
-  CU_add_test(suite, "test search inserted word with more than max potential suggestions", testSearchInsertedWordMoreThan5);
-  CU_add_test(suite, "test search non existent word", testSearchNonExistentPrefix);
+  CU_add_test(suite,
+              "test search inserted word with 4/max potential suggestions",
+              testSearchInsertedWordLessThan5);
+  CU_add_test(
+      suite,
+      "test search inserted word with more than max potential suggestions",
+      testSearchInsertedWordMoreThan5);
+  CU_add_test(suite, "test search non existent word",
+              testSearchNonExistentPrefix);
 }

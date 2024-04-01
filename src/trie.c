@@ -5,6 +5,7 @@
 #include <string.h>
 #include <trie.h>
 #include <word_completion.h>
+#include <util.h>
 
 // Initialises and returns the root node of a trie
 TrieNode *getNode() {
@@ -23,33 +24,29 @@ TrieNode *getNode() {
 }
 
 // Inserts a word into the trie
-void insert(TrieNode *root, const char *key, int weight) {
-  TrieNode *pCrawl = root;
-
-  if (key[0] == '\0') {
-    return; // do not insert empty character
+// adapted from https://www.geeksforgeeks.org/trie-insert-and-search/
+void insert(struct TrieNode *root, const char *key, int weight) {
+  if (!isAlphabetWord(key) || (int)strlen(key) == 0) {
+    return;
   }
 
-  // crawl through trie
-  while (*key) {
-    int index;
-    if (isupper(*key)) { // convert to lower case
-      index = tolower(*key) - 'a';
-    } else {
-      index = *key - 'a';
-    }
+  int length = strlen(key);
+  int index;
 
-    // if not a lower case letter
-    if (index < 0 || index >= ALPHABET_SIZE) {
-      return;
+  struct TrieNode *pCrawl = root;
+
+  for (int level = 0; level < length; level++) {
+    char c = key[level];
+    if (isupper(c)) {
+      index = tolower(c) - 'a';
+    } else {
+      index = c - 'a';
     }
 
     if (!pCrawl->children[index]) {
       pCrawl->children[index] = getNode();
     }
-    
     pCrawl = pCrawl->children[index];
-    key++;
   }
 
   pCrawl->isEndOfWord = true;
@@ -125,7 +122,7 @@ List *getSuggestions(TrieNode *root, const char *prefix) {
   int numSuggestions = (count < MAX_SUGGESTIONS) ? count : MAX_SUGGESTIONS;
   for (int i = 0; i < numSuggestions; i++) {
     Suggestion currentSuggestion = *(Suggestion *)getListElement(&suggestions, i);
-    addElement(result, currentSuggestion.word, strlen(currentSuggestion.word));
+    addElement(result, currentSuggestion.word, strlen(currentSuggestion.word) + 1);
   }
 
   return result;

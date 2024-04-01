@@ -11,7 +11,8 @@ SRCS = src/terminal.c \
       src/list.c \
       src/word_completion.c \
       src/prefix_matcher.c \
-      src/trie.c 
+      src/trie.c \
+      src/util.c
 
 TESTS = tests/test_trie.c \
         tests/test_list.c
