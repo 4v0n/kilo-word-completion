@@ -305,7 +305,7 @@ void initWordCompletionEngine() {
   EC.prefix = malloc(2 * sizeof(char));
   EC.prefix[0] = '\0';
 
-  initList(&EC.suggestions);
+  EC.suggestions = *createList();
 
   EC.selection = 0;
   EC.mode = PREFIX;

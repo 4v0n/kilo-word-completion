@@ -3,9 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-void initList(List *list) {
+List *createList() {
+  List *list = (List *)malloc(sizeof(List));
   list->head = NULL;
   list->size = 0;
+
+  return list;
 }
 
 Node *getListNode(const List *list, const int index) {
@@ -20,7 +23,7 @@ Node *getListNode(const List *list, const int index) {
 
     if (nextNode == NULL) {
       return NULL;
-    } else if ((i+1) == index) {
+    } else if ((i + 1) == index) {
       return nextNode;
     }
 
@@ -31,11 +34,12 @@ Node *getListNode(const List *list, const int index) {
 }
 
 void addElement(List *list, const void *data, const size_t dataSize) {
-  if (data == NULL)
+  if (data == NULL || list == NULL || dataSize == NULL)
     return;
 
   Node *newNode = (Node *)malloc(sizeof(Node));
   newNode->data = malloc(dataSize);
+  newNode->next = NULL;
   memcpy(newNode->data, data, dataSize);
 
   if (list->head == NULL) {
@@ -58,47 +62,83 @@ void *getListElement(const List *list, const int index) {
   return node->data;
 }
 
-void sortedInsert(Node **headRef, Node *newNode, Comparator comp) {
-  Node dummy;
-  Node *current = &dummy;
-  dummy.next = *headRef;
+// adapted from https://www.geeksforgeeks.org/merge-sort-for-linked-list/
+void frontBackSplit(struct Node* source, struct Node** frontRef, struct Node** backRef) {
+  struct Node *fast;
+  struct Node *slow;
+  slow = source;
+  fast = source->next;
 
-  while (current->next != NULL && comp(current->next->data, newNode->data) < 0) {
-    current = current->next;
+  while (fast != NULL) {
+    fast = fast->next;
+    if (fast != NULL) {
+      slow = slow->next;
+      fast = fast->next;
+    }
   }
 
-  newNode->next = current->next;
-  current->next = newNode;
-
-  *headRef = dummy.next;
+  *frontRef = source;
+  *backRef = slow->next;
+  slow->next = NULL;
 }
 
-void sortList(List *list, Comparator comp) {
+// adapted from https://www.geeksforgeeks.org/merge-sort-for-linked-list/
+struct Node *sortedMerge(struct Node *a, struct Node *b, Comparator comp) {
+  struct Node *result = NULL;
 
-  if (comp == NULL) {
+  if (a == NULL) {
+    return b;
+  } else if (b == NULL) {
+    return a;
+  }
+
+  if (comp(a,b) <= 0) {
+    result = a;
+    result->next = sortedMerge(a->next, b, comp);
+  } else {
+    result = b;
+    result->next = sortedMerge(a, b->next, comp);
+  }
+
+  return result;
+}
+
+// MergeSort algorithm adapted from
+// https://www.geeksforgeeks.org/merge-sort-for-linked-list/
+void mergeSort(struct Node **headRef, Comparator comp) {
+  struct Node *head = *headRef;
+  struct Node *a;
+  struct Node *b;
+
+  if ((head == NULL) || (head->next == NULL)) {
     return;
   }
 
-  Node *sorted = NULL;
+  frontBackSplit(head, &a, &b);
+
+  mergeSort(&a, comp);
+  mergeSort(&b, comp);
+
+  *headRef = sortedMerge(a,b, comp);
+}
+
+void sortList(List *list, Comparator comp) {
+  if (list->head == NULL || comp == NULL) {
+    return;
+  }
+  mergeSort(&list->head, comp);
+}
+
+void emptyList(List *list) {
   Node *current = list->head;
   while (current != NULL) {
     Node *next = current->next;
-    sortedInsert(&sorted, current, comp);
+    free(current->data); // Free the data pointed by the node
+    free(current);       // Free the node itself
     current = next;
   }
-  list->head = sorted;
-}
-
-void emptyList(List* list) {
-    Node* current = list->head;
-    while (current != NULL) {
-        Node* next = current->next;
-        free(current->data); // Free the data pointed by the node
-        free(current); // Free the node itself
-        current = next;
-    }
-    list->head = NULL; // After all nodes are freed, set head to NULL
-    list->size = 0; // Reset size to 0
+  list->head = NULL; // After all nodes are freed, set head to NULL
+  list->size = 0;    // Reset size to 0
 }
 
 void freeList(List *list) {

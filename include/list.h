@@ -13,9 +13,9 @@ typedef struct List {
   int size;
 } List;
 
-typedef int (*Comparator)(const void*, const void*);
+typedef int (*Comparator)(const struct Node*, const struct Node*);
 
-void initList(List *list);
+List *createList();
 void addElement(List *list, const void *data, const size_t dataSize);
 void *getListElement(const List *list, int index);
 void sortList(List* list, Comparator comp);

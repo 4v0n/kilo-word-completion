@@ -1,9 +1,9 @@
 #include <CUnit/Basic.h>
 #include <list.h>
 
-int compareIntegers(const void *a, const void *b) {
-  int intA = *(const int*)a;
-  int intB = *(const int*)b;
+int compareIntegers(const Node *a, const Node *b) {
+  int intA = *(const int*)a->data;
+  int intB = *(const int*)b->data;
 
   if (intA < intB) return -1;
   if (intA == intB) return 0;
@@ -11,16 +11,15 @@ int compareIntegers(const void *a, const void *b) {
 }
 
 void testInitList() {
-  List list;
-  initList(&list);
+  List list = *createList();
 
   CU_ASSERT_EQUAL(list.head, NULL);
   CU_ASSERT_EQUAL(list.size, 0);
 }
 
 void testAddInvalidElement() {
-  List list;
-  initList(&list);
+  List list = *createList();
+
 
   addElement(&list, NULL, sizeof(NULL));
 
@@ -29,8 +28,7 @@ void testAddInvalidElement() {
 }
 
 void testAddSingleElement() {
-  List list;
-  initList(&list);
+  List list = *createList();
 
   int item = 2;
 
@@ -42,8 +40,7 @@ void testAddSingleElement() {
 }
 
 void testAddMultipleElements() {
-  List list;
-  initList(&list);
+  List list = *createList();
 
   int item1 = 1;
   int item2 = 2;
@@ -61,8 +58,8 @@ void testAddMultipleElements() {
 }
 
 void testGetElement() {
-  List list;
-  initList(&list);
+  List list = *createList();
+
 
   int item1 = 1;
   int item2 = 8;
@@ -75,8 +72,7 @@ void testGetElement() {
 }
 
 void testGetOutOfBoundsElement() {
-  List list;
-  initList(&list);
+  List list = *createList();
 
   int item1 = 1;
   int item2 = 8;
@@ -89,8 +85,8 @@ void testGetOutOfBoundsElement() {
 }
 
 void testSortEmptyList() {
-  List list;
-  initList(&list);
+  List list = *createList();
+
 
   sortList(&list, compareIntegers);
 
@@ -99,8 +95,8 @@ void testSortEmptyList() {
 }
 
 void testSortSingleElementList() {
-  List list;
-  initList(&list);
+  List list = *createList();
+
 
   int item = 2;
   addElement(&list, &item, sizeof(item));
@@ -113,8 +109,8 @@ void testSortSingleElementList() {
 }
 
 void testSortUnsortedList() {
-  List list;
-  initList(&list);
+  List list = *createList();
+
 
   int items[] = {9, 3, 5, 7, 3, 2};
 
@@ -138,8 +134,8 @@ void testSortUnsortedList() {
 }
 
 void testSortSortedList() {
-  List list;
-  initList(&list);
+  List list = *createList();
+
 
   int items[] = {1, 2, 3, 4, 5, 6};
 
@@ -163,8 +159,8 @@ void testSortSortedList() {
 }
 
 void testSortWithNullComparator() {
-  List list;
-  initList(&list);
+  List list = *createList();
+
 
   int items[] = {9, 3, 5, 7, 3, 2};
 
@@ -188,15 +184,14 @@ void testSortWithNullComparator() {
 }
 
 void testFreeEmptyList() {
-  List *list = malloc(sizeof(List));
-  initList(list);
+  List *list = createList();
+
 
   freeList(list);
 }
 
 void testFreeNonEmptyList() {
-  List *list = malloc(sizeof(List));
-  initList(list);
+  List *list = createList();
 
   int items[] = {9, 3, 5, 7, 3, 2};
 

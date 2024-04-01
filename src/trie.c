@@ -100,9 +100,9 @@ void dfs(TrieNode *root, List *suggestions, int *count, char *currentWord, int d
   }
 }
 
-int compare(const void *a, const void *b) {
-  Suggestion *suggestionA = (Suggestion *)a;
-  Suggestion *suggestionB = (Suggestion *)b;
+int compare(const Node *a, const Node *b) {
+  Suggestion *suggestionA = (Suggestion *)a->data;
+  Suggestion *suggestionB = (Suggestion *)b->data;
   return suggestionB->weight - suggestionA->weight;
 }
 
@@ -111,8 +111,7 @@ List *getSuggestions(TrieNode *root, const char *prefix) {
   if (!leaf)
     return NULL;
 
-  List suggestions;
-  initList(&suggestions);
+  List suggestions = *createList();
 
   int count = 0;
   char currentWord[100] = {0};
@@ -121,8 +120,7 @@ List *getSuggestions(TrieNode *root, const char *prefix) {
   dfs(leaf, &suggestions, &count, currentWord, strlen(prefix));
   sortList(&suggestions, compare);
 
-  List *result = malloc(sizeof(List));
-  initList(result);
+  List *result = createList();
 
   int numSuggestions = (count < MAX_SUGGESTIONS) ? count : MAX_SUGGESTIONS;
   for (int i = 0; i < numSuggestions; i++) {
