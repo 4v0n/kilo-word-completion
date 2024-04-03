@@ -6,7 +6,7 @@
 #include <list.h>
 
 #define WORDS_PATH "../resources/words.csv"
-#define WORD_COMPLETE_HELP "HELP: Ctrl-enter = complete | Ctrl-a/d = Select | Ctrl-w/s = Switch Mode"
+#define WORD_COMPLETE_HELP "HELP: Ctrl-enter = complete | Ctrl-a/d = Select | Ctrl-w = Switch Mode"
 #define MAX_PREFIX_LENGTH 5
 
 enum completionModes { PREFIX = 0, FUZZY };
