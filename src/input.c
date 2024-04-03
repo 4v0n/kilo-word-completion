@@ -190,6 +190,10 @@ void editorProcessKeypress() {
     wordCompletionChooseCompletion(c);
     break;
 
+  case CTRL_KEY('w'):
+    toggleCompletionMode();
+    break;
+
   case BACKSPACE:
   case DEL_KEY:
     if (c == DEL_KEY)

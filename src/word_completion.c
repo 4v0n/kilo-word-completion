@@ -13,6 +13,7 @@
 #include <terminal.h>
 #include <util.h>
 #include <word_completion.h>
+#include <levenshtein_matcher.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -230,7 +231,7 @@ void fillSuggestions(const char *word) {
     suggestions = pmGetSuggestions(word);
     break;
   case FUZZY:
-    // execute fuzzy match code
+    suggestions = lmGetSuggestions(word);
     break;
   }
 
@@ -287,7 +288,7 @@ bool initMatcher() {
     working = initPM();
     break;
   case FUZZY:
-    // working = initFM();
+    working = initLM();
     break;
   }
 
@@ -316,6 +317,33 @@ void initWordCompletionEngine() {
 
   EC.selection = 0;
   EC.mode = PREFIX;
+
+  initMatcher();
+}
+
+void destroyMatcher() {
+  switch (EC.mode) {
+  case PREFIX:
+    destroyPM();
+    break;
+  case FUZZY:
+    destroyLM();
+    break;
+  }
+}
+
+void toggleCompletionMode() {
+  destroyMatcher();
+
+  int newMode = EC.mode + 1;
+
+  if (newMode > (NUM_MODES - 1)) {
+    newMode = 0;
+  } else if (EC.selection < 0) {
+    newMode = NUM_MODES - 1;
+  }
+
+  EC.mode = newMode;
 
   initMatcher();
 }

@@ -4,13 +4,15 @@
 #include <string.h>
 #include <trie.h>
 #include <word_completion.h>
+#include <stdbool.h>
 
 #define MAX_LINE_LENGTH 1024
 
-TrieNode root;
+TrieNode *root;
+
 
 List *pmGetSuggestions(const char *word) {
-  List *suggestions = getSuggestions(&root, word);
+  List *suggestions = getSuggestions(root, word);
   if (suggestions != NULL) {
     return suggestions;
   }
@@ -19,7 +21,7 @@ List *pmGetSuggestions(const char *word) {
 }
 
 bool initPM() {
-  root = *getNode();
+  root = getNode();
   FILE *file = fopen(WORDS_PATH, "r");
 
   if (file == NULL) {
@@ -33,7 +35,7 @@ bool initPM() {
 
         // Check if the word and count are successfully parsed
         if (sscanf(buffer, "%[^,],%d", word, &count) == 2) {
-            insert(&root, word, count);
+            insert(root, word, count);
             free(word);
         } else {
             free(word);
@@ -41,4 +43,8 @@ bool initPM() {
     }
 
   return true;
+}
+
+void destroyPM() {
+  freeTrie(root);
 }

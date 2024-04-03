@@ -13,6 +13,7 @@ SRCS = src/terminal.c \
       src/prefix_matcher.c \
       src/trie.c \
       src/levenshtein.c \
+      src/levenshtein_matcher.c \
       src/util.c
 
 TESTS = tests/test_trie.c \

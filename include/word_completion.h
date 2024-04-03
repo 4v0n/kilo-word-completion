@@ -10,6 +10,7 @@
 #define MAX_PREFIX_LENGTH 5
 
 enum completionModes { PREFIX = 0, FUZZY };
+#define NUM_MODES 2
 
 typedef struct Suggestion {
   char *word;
@@ -34,6 +35,7 @@ void completeWord();
 void updateEC();
 
 void initWordCompletionEngine();
+void toggleCompletionMode();
 
 void freeSuggestion(Suggestion *suggestion);
 
