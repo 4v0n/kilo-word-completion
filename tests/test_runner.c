@@ -2,6 +2,7 @@
 
 extern void addListTests();
 extern void addTrieTests();
+extern void addLevenshteinTests();
 
 int main() {
   if (CUE_SUCCESS != CU_initialize_registry())
@@ -10,6 +11,7 @@ int main() {
   // Add tests
   addListTests();
   addTrieTests();
+  addLevenshteinTests();
 
   CU_basic_set_mode(CU_BRM_VERBOSE);
   

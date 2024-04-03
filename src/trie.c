@@ -105,7 +105,7 @@ int compare(const Node *a, const Node *b) {
 }
 
 List *getSuggestions(TrieNode *root, const char *prefix) {
-  char lowerPrefix[MAX_PREFIX_LENGTH] = {0};
+  char lowerPrefix[MAX_PREFIX_LENGTH + 1] = {0};
 
   // Convert prefix to lowercase
   for (int i = 0; prefix[i] != '\0'; i++) {

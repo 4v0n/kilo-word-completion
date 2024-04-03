@@ -183,6 +183,9 @@ void completeWord() {
   free(EC.prefix);
   EC.prefix = malloc(1 * sizeof(char));
   EC.prefix[0] = '\0';
+
+  EC.selection = 0;
+  emptyList(&EC.suggestions);
 }
 
 char *getWordAtIndex(const char *str, const int index, int rowsize) {
@@ -256,6 +259,7 @@ void updateEC() {
   free(EC.prefix);
 
   EC.selection = 0;
+  emptyList(&EC.suggestions);
 
   char *word = getWordAtIndex(rowString, pos, row.size);
 

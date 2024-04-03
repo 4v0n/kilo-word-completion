@@ -12,10 +12,12 @@ SRCS = src/terminal.c \
       src/word_completion.c \
       src/prefix_matcher.c \
       src/trie.c \
+      src/levenshtein.c \
       src/util.c
 
 TESTS = tests/test_trie.c \
-        tests/test_list.c
+        tests/test_list.c \
+        tests/test_levenshtein.c
 
 .PHONY: main test clean
 
