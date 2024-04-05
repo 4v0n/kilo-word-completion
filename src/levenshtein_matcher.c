@@ -11,7 +11,7 @@
 TrieNode *root;
 
 struct LevenshteinSuggestion {
-  char word[100];
+  char *word;
   int distance;
 } LevenshteinSuggestion;
 
@@ -23,73 +23,70 @@ int compareLevenshteinSuggestions(const Node *a, const Node *b) {
   return sA->distance - sB->distance;
 }
 
-void findCompletions(TrieNode *node, const char *prefix, char *currentWord,
-                     int level, List *suggestions, int* suggestionCount) {
-
-  if (!node || *suggestionCount >= MAX_LEVENSHTEIN_SEARCH)
-    return;
-
-  if (level >= 99) {
+void dfsLevenshtein(TrieNode *root, List *suggestions, int *count, char *currentWord,
+         int depth, char *prefix) {
+  if (!root) {
     return;
   }
 
-  if (node->isEndOfWord) {
-    currentWord[level] = '\0';
-    int distance = getLevenshteinDistance(prefix, currentWord);
+  // word hit
+  if (root->isEndOfWord) {
+    currentWord[depth] = '\0';
 
-    if (*suggestionCount < MAX_SUGGESTIONS) {
-      struct LevenshteinSuggestion *suggestion =
-          malloc(sizeof(LevenshteinSuggestion));
+    struct LevenshteinSuggestion suggestion;
+    suggestion.word = (char *)malloc(strlen(currentWord) + 1);
+    strcpy(suggestion.word, currentWord);
+    suggestion.distance = getLevenshteinDistance(prefix, currentWord);
 
-      strcpy(suggestion->word, currentWord);
-      suggestion->distance = distance;
-      addElement(suggestions, suggestion, sizeof(*suggestion));
-      (*suggestionCount)++;
-    }
+    addElement(suggestions, &suggestion, sizeof(suggestion));
+
+    (*count)++;
   }
 
-  for (int i = 0; i < ALPHABET_SIZE && *suggestionCount < MAX_SUGGESTIONS; i++) {
-    if (node->children[i]) {
-      currentWord[level] = 'a' + i;
-      findCompletions(node->children[i], prefix, currentWord, level + 1,
-                      suggestions, suggestionCount);
-    }
-  }
-}
-
-void toLowerCase(char *str) {
-  if (str) {
-    while (*str) {
-      *str = tolower((unsigned char)*str);
-      str++;
+  // visit all children nodes
+  for (int i = 0; i < ALPHABET_SIZE; i++) {
+    if (root->children[i]) {
+      currentWord[depth] = 'a' + i;  // append current char to word
+      currentWord[depth + 1] = '\0'; // null terminate string
+      dfs(root->children[i], suggestions, count, currentWord, depth + 1, prefix);
+      currentWord[depth] = '\0'; // remove last char
     }
   }
 }
 
 List *lmGetSuggestions(const char *word) {
-  char prefix[MAX_PREFIX_LENGTH + 1];
-  strncpy(prefix, word, sizeof(prefix));
-  prefix[sizeof(prefix) - 1] = '\0';
-  toLowerCase(prefix);
+  char lowerPrefix[MAX_PREFIX_LENGTH + 1] = {0};
 
-  List *suggestions = createList();
-  char currentWord[100];
-  int numSuggestions = 0;
-  findCompletions(root, prefix, currentWord, 0, suggestions, &numSuggestions);
-
-  sortList(suggestions, compareLevenshteinSuggestions);
-
-  List *results = createList();
-  Node *current = suggestions->head;
-  for (int i = 0; i < MAX_SUGGESTIONS && current != NULL; i++) {
-    const struct LevenshteinSuggestion *suggestion =
-        (const struct LevenshteinSuggestion *)current->data;
-    addElement(results, suggestion->word, strlen(suggestion->word) + 1);
-    current = current->next;
+  // Convert prefix to lowercase
+  for (int i = 0; word[i] != '\0'; i++) {
+    lowerPrefix[i] = tolower(word[i]);
   }
 
-  freeList(suggestions);
-  return results;
+  TrieNode *leaf = getTrieLeaf(root, lowerPrefix);
+  if (!leaf)
+    return NULL;
+
+  List suggestions = *createList();
+  int count = 0;
+  char currentWord[100] = {0};
+
+  // Use the lowercase prefix
+  strncpy(currentWord, lowerPrefix, strlen(lowerPrefix));
+
+  dfsLevenshtein(leaf, &suggestions, &count, currentWord, strlen(lowerPrefix), lowerPrefix);
+  sortList(&suggestions, compareLevenshteinSuggestions);
+
+  List *result = createList();
+  int numSuggestions = (count < MAX_SUGGESTIONS) ? count : MAX_SUGGESTIONS;
+
+  for (int i = 0; i < numSuggestions; i++) {
+    Suggestion currentSuggestion =
+        *(Suggestion *)getListElement(&suggestions, i);
+    addElement(result, currentSuggestion.word,
+               strlen(currentSuggestion.word) + 1);
+  }
+
+  return result;
 }
 
 bool initLM() {
