@@ -5,4 +5,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+List *langGetSuggestions(const char *word);
+bool initLangM();
+void destroyLangM();
+
 #endif

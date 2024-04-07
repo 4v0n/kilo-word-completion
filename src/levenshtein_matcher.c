@@ -65,13 +65,7 @@ char* getFirstHalf(const char* input) {
 
     // Allocate memory for the new string (+1 for the null terminator)
     char* firstHalf = (char*)malloc(halfLength + 1);
-
-    if (firstHalf == NULL) {
-        // Handle memory allocation failure
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(1);
-    }
-
+    
     // Copy the first half of the input to the new string
     strncpy(firstHalf, input, halfLength);
 
@@ -86,7 +80,7 @@ List *lmGetSuggestions(const char *word) {
     Due to the aditional complexity of the Levenshtein Distance calculation,
     this function is more of a hybrid between prefix and fuzzy matching.
 
-    The first half of the prefix is prefix-matched and the rest is fuzzy matched.
+    The first half of the prefix is used to navigate down a trie and the rest is fuzzy matched
   */
 
   char lowerPrefix[MAX_PREFIX_LENGTH + 1] = {0};
@@ -122,6 +116,7 @@ List *lmGetSuggestions(const char *word) {
                strlen(currentSuggestion.word) + 1);
   }
 
+  free(halfPrefix);
   return result;
 }
 

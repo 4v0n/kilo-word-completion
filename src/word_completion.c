@@ -14,6 +14,7 @@
 #include <util.h>
 #include <word_completion.h>
 #include <levenshtein_matcher.h>
+#include <language_matcher.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -32,8 +33,11 @@ char *modeToString(int mode) {
   case FUZZY:
     return "| mode: fuzzy match";
     break;
+  case LANGUAGE:
+    return "| mode: language match";
+    break;
   };
-  return NULL;
+  return "| mode: undefined";
 }
 
 // converts a string to all upper case
@@ -233,6 +237,8 @@ void fillSuggestions(const char *word) {
   case FUZZY:
     suggestions = lmGetSuggestions(word);
     break;
+  case LANGUAGE:
+    suggestions = langGetSuggestions(word);
   }
 
   if (suggestions) {
@@ -290,6 +296,9 @@ bool initMatcher() {
   case FUZZY:
     working = initLM();
     break;
+  case LANGUAGE:
+    working = initLangM();
+    break;
   }
 
   if (statusmsg != NULL) {
@@ -328,6 +337,9 @@ void destroyMatcher() {
     break;
   case FUZZY:
     destroyLM();
+    break;
+  case LANGUAGE:
+    destroyLangM();
     break;
   }
 }

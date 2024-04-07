@@ -10,7 +10,7 @@
 #define MAX_PREFIX_LENGTH 10
 
 enum completionModes { PREFIX = 0, FUZZY, LANGUAGE};
-#define NUM_MODES 2
+#define NUM_MODES 3
 
 typedef struct Suggestion {
   char *word;
