@@ -112,7 +112,7 @@ void editorUpdateSyntax(erow *row) {
     unsigned char prev_hl = (i > 0) ? row->hl[i - 1] : HL_NORMAL;
 
     // handle single line comments
-    if (scs_len && !in_string && in_comment) {
+    if (scs_len && !in_string && !in_comment) {
       if (!strncmp(&row->render[i], scs, scs_len)) {
         // highlight whole row
         memset(&row->hl[i], HL_COMMENT, row->rsize - i);
