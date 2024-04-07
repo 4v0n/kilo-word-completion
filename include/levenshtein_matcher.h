@@ -6,8 +6,6 @@
 #include <string.h>
 
 #define MAX_LINE_LENGTH 1024
-#define MAX_LEVENSHTEIN_SEARCH 5000
-#define MINIMUM_LEVENSHTEIN_DISTANCE 10
 
 List *lmGetSuggestions(const char *word);
 bool initLM();

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <trie.h>
 #include <word_completion.h>
+#include <limits.h>
 
 TrieNode *root;
 
@@ -24,37 +25,70 @@ int compareLevenshteinSuggestions(const Node *a, const Node *b) {
 }
 
 void dfsLevenshtein(TrieNode *root, List *suggestions, int *count, char *currentWord,
-         int depth, char *prefix) {
-  if (!root) {
+                    int depth, char *prefix) {
+  if (!root || depth > MAX_PREFIX_LENGTH) {
     return;
   }
 
-  // word hit
-  if (root->isEndOfWord) {
-    currentWord[depth] = '\0';
+  currentWord[depth] = '\0';
+  int currentDistance = getLevenshteinDistance(prefix, currentWord);
 
+  if (currentDistance > MAX_PREFIX_LENGTH - depth) {
+    return;
+  }
+
+  // Word hit
+  if (root->isEndOfWord) {
     struct LevenshteinSuggestion suggestion;
     suggestion.word = (char *)malloc(strlen(currentWord) + 1);
     strcpy(suggestion.word, currentWord);
-    suggestion.distance = getLevenshteinDistance(prefix, currentWord);
+    suggestion.distance = currentDistance;
 
     addElement(suggestions, &suggestion, sizeof(suggestion));
 
     (*count)++;
   }
 
-  // visit all children nodes
+  // Visit all children nodes
   for (int i = 0; i < ALPHABET_SIZE; i++) {
     if (root->children[i]) {
-      currentWord[depth] = 'a' + i;  // append current char to word
-      currentWord[depth + 1] = '\0'; // null terminate string
+      currentWord[depth] = 'a' + i; // append current char to word
       dfsLevenshtein(root->children[i], suggestions, count, currentWord, depth + 1, prefix);
-      currentWord[depth] = '\0'; // remove last char
+      currentWord[depth] = '\0'; // remove last char for backtracking
     }
   }
 }
 
+char* getFirstHalf(const char* input) {
+    int length = strlen(input);
+    int halfLength = (length + 1) / 2; // +1 ensures a single char is copied entirely
+
+    // Allocate memory for the new string (+1 for the null terminator)
+    char* firstHalf = (char*)malloc(halfLength + 1);
+
+    if (firstHalf == NULL) {
+        // Handle memory allocation failure
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+
+    // Copy the first half of the input to the new string
+    strncpy(firstHalf, input, halfLength);
+
+    // Ensure the new string is null-terminated
+    firstHalf[halfLength] = '\0';
+
+    return firstHalf;
+}
+
 List *lmGetSuggestions(const char *word) {
+  /*
+    Due to the aditional complexity of the Levenshtein Distance calculation,
+    this function is more of a hybrid between prefix and fuzzy matching.
+
+    The first half of the prefix is prefix-matched and the rest is fuzzy matched.
+  */
+
   char lowerPrefix[MAX_PREFIX_LENGTH + 1] = {0};
 
   // Convert prefix to lowercase
@@ -62,7 +96,9 @@ List *lmGetSuggestions(const char *word) {
     lowerPrefix[i] = tolower(word[i]);
   }
 
-  TrieNode *leaf = getTrieLeaf(root, lowerPrefix);
+  char *halfPrefix = getFirstHalf(lowerPrefix);
+
+  TrieNode *leaf = getTrieLeaf(root, halfPrefix);
   if (!leaf)
     return NULL;
 
