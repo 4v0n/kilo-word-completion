@@ -327,6 +327,12 @@ void initWordCompletionEngine() {
   EC.selection = 0;
   EC.mode = PREFIX;
 
+  // initialise to language match
+  struct editorConfig *E = getEditorConfig();
+  if (E->syntax) {
+    EC.mode = LANGUAGE;
+  }
+
   initMatcher();
 }
 

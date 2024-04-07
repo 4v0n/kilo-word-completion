@@ -25,11 +25,13 @@
 int main(int argc, char *argv[]) {
   enableRawMode();
   initEditor();
-  initWordCompletionEngine();
+  
 
   if (argc >= 2) {
     editorOpen(argv[1]);
   }
+  
+  initWordCompletionEngine();
 
   editorSetStatusMessage(HELP_MESSAGE);
 
