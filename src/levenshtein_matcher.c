@@ -48,7 +48,7 @@ void dfsLevenshtein(TrieNode *root, List *suggestions, int *count, char *current
     if (root->children[i]) {
       currentWord[depth] = 'a' + i;  // append current char to word
       currentWord[depth + 1] = '\0'; // null terminate string
-      dfs(root->children[i], suggestions, count, currentWord, depth + 1, prefix);
+      dfsLevenshtein(root->children[i], suggestions, count, currentWord, depth + 1, prefix);
       currentWord[depth] = '\0'; // remove last char
     }
   }

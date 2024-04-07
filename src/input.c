@@ -18,6 +18,7 @@
 #include <terminal.h>
 #include <unistd.h>
 #include <word_completion.h>
+#include <string.h>
 
 /*** defines ***/
 #define CTRL_KEY(k) ((k) & 0x1f) // bitwise AND character with 00011111
@@ -118,6 +119,33 @@ void editorMoveCursor(int key) {
   if (E->cx > rowlen) {
     E->cx = rowlen;
   }
+}
+
+void autoPair(char c) {
+  if (strchr("\"{[(\'", c) == NULL) {
+    return;
+  }
+
+  switch (c)
+  {
+  case '{':
+    editorInsertChar('}');
+    break;
+
+  case '[':
+    editorInsertChar(']');
+    break;
+
+  case '(':
+    editorInsertChar(')');
+    break;
+  
+  default:
+    editorInsertChar(c);
+    break;
+  }
+
+  editorMoveCursor(ARROW_LEFT);
 }
 
 // Waits for a keypress and handles it
@@ -233,6 +261,7 @@ void editorProcessKeypress() {
 
   default:
     editorInsertChar(c);
+    autoPair(c);
     updateEC();
     break;
   }
