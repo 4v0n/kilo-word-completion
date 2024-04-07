@@ -81,6 +81,7 @@ enum editorHighlight {
 
 // details about file type
 struct editorSyntax {
+  int id;
   char *filetype; // name of filetype
   char **
       filematch; // array of strings, each a pattern to match a filename against

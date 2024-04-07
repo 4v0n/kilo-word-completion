@@ -22,15 +22,60 @@ char *C_HL_keywords[] = {"switch",    "if",      "while",   "for",    "break",
                          "int|",      "long|",   "double|", "float|", "char|",
                          "unsigned|", "signed|", "void|",   NULL};
 
-struct editorSyntax HLDB[] = {
-    {"c", C_HL_extensions, C_HL_keywords, "//", "/*", "*/",
-     HL_HIGHLIGHT_NUMBERS | HL_HIGHLIGHT_STRINGS},
+char *LaTeX_HL_extensions[] = {".tex"};
+
+char *LaTeX_HL_keywords[] = {
+  "\\documentclass|", "\\usepackage|", "\\begin|", "\\end|", 
+  "\\section|", "\\subsection|", "\\subsubsection|", "\\paragraph|", 
+  "\\subparagraph|", "\\tableofcontents", "\\listoffigures", "\\listoftables", 
+  "\\chapter|",
+  "\\maketitle", "\\author|", "\\date|", "\\title|", 
+  "\\newpage", "\\newline", "\\textbf|", "\\textit|", 
+  "\\underline|", "\\emph|", "\\texttt|", "\\textsc|", 
+  "\\small", "\\normalsize", "\\large", "\\Large", 
+  "\\LARGE", "\\huge", "\\Huge", "\\label|", 
+  "\\ref|", "\\pageref|", "\\footnote|", "\\bibliography|", 
+  "\\bibliographystyle|", "\\cite|", "\\newcommand|", "\\renewcommand|", 
+  "\\newenvironment|", "\\renewenvironment|", "\\pagebreak", "\\linebreak", 
+  "\\include|", "\\input|", "\\appendix", "\\abstract", 
+  "\\textsuperscript|", "\\textsubscript|", "\\includegraphics|", "\\url|", 
+  "\\hyperref|", "\\item", "\\itemize", "\\enumerate", 
+  "\\description", "\\matrix|", "\\pmatrix|", "\\bmatrix|", 
+  "\\vmatrix|", "\\Vmatrix|", "\\cases|", "\\align|", 
+  "\\equation|", "\\sqrt|", "\\frac|", "\\sum|", 
+  "\\product|", "\\integrate|", "\\limit|", "\\infinity", 
+  "\\partial|", "\\nabla|", "\\exists|", "\\forall|", 
+  "\\emptyset", "\\in", "\\notin", "\\subset", 
+  "\\supset", "\\union", "\\intersect", "\\setminus", 
+  "\\to", "\\gets", "\\Rightarrow|", "\\Leftarrow|", 
+  "\\Leftrightarrow|",
+  "\\\\", "&", "$", "$$", "\\[", "\\]",
+  NULL
 };
+
+enum IDs { C = 0, LaTeX };
+
+struct editorSyntax HLDB[] = {
+    {C, "c", C_HL_extensions, C_HL_keywords, "//", "/*", "*/",
+     HL_HIGHLIGHT_NUMBERS | HL_HIGHLIGHT_STRINGS},
+    {LaTeX, "LaTeX", LaTeX_HL_extensions, LaTeX_HL_keywords, "%",
+     "\\begin{comment}", "\\end{comment}", HL_HIGHLIGHT_STRINGS}};
 
 #define HLDB_ENTRIES (sizeof(HLDB) / sizeof(HLDB[0]))
 
 int is_separator(int c) {
-  return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
+  struct editorConfig *E = getEditorConfig();
+
+  switch (E->syntax->id) {
+  case C:
+    return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
+    break;
+  case LaTeX:
+    return isspace(c) || c == '\0' || strchr("{}[]()^_~", c) != NULL;
+    break;
+  }
+
+  return -1;
 }
 
 // Updates the syntax highlighting for a row of text
@@ -83,7 +128,7 @@ void editorUpdateSyntax(erow *row) {
           // highlight row until comment end
           memset(&row->hl[i], HL_MLCOMMENT, mce_len);
           i += mce_len; // skip past comment end marker
-          in_comment = 0; 
+          in_comment = 0;
           prev_sep = 1;
           continue;
         } else {
@@ -102,10 +147,10 @@ void editorUpdateSyntax(erow *row) {
     // Handle strings
     if (E->syntax->flags & HL_HIGHLIGHT_STRINGS) {
       if (in_string) {
-        row->hl[i] = HL_STRING; // highlight character
+        row->hl[i] = HL_STRING;                // highlight character
         if (c == '\\' && i + 1 < row->rsize) { // escape sequence
-          row->hl[i + 1] = HL_STRING; // highlight next character
-          i += 2; // skip escaped char
+          row->hl[i + 1] = HL_STRING;          // highlight next character
+          i += 2;                              // skip escaped char
           continue;
         }
 
@@ -119,7 +164,7 @@ void editorUpdateSyntax(erow *row) {
 
       } else {
         if (c == '"' || c == '\'') { // start of string
-          in_string = c; // mark quote char used to start string
+          in_string = c;             // mark quote char used to start string
           row->hl[i] = HL_STRING;
           i++;
           continue;
@@ -143,7 +188,7 @@ void editorUpdateSyntax(erow *row) {
     if (prev_sep) {
       int j;
       for (j = 0; keywords[j]; j++) {
-        int klen = strlen(keywords[j]); // keyword length
+        int klen = strlen(keywords[j]);         // keyword length
         int kw2 = keywords[j][klen - 1] == '|'; // check if special keyword
         if (kw2)
           klen--; // Adjust length for special keyword
@@ -171,7 +216,7 @@ void editorUpdateSyntax(erow *row) {
   row->hl_open_comment = in_comment; // update open comment flag
   // update syntax highlighting for next row
   if (changed && row->idx + 1 < E->numrows)
-    editorUpdateSyntax(&E->row[row->idx + 1]); 
+    editorUpdateSyntax(&E->row[row->idx + 1]);
 }
 
 int editorSyntaxToColour(int hl) {
@@ -194,7 +239,8 @@ int editorSyntaxToColour(int hl) {
   }
 }
 
-// selects the appropriate syntax highlighting rules based on the file's extension
+// selects the appropriate syntax highlighting rules based on the file's
+// extension
 void editorSelectSyntaxHighlight() {
   struct editorConfig *E = getEditorConfig();
 
