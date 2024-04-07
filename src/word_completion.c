@@ -4,6 +4,8 @@
 
 #include <ctype.h>
 #include <editor_operations.h>
+#include <language_matcher.h>
+#include <levenshtein_matcher.h>
 #include <output.h>
 #include <prefix_matcher.h>
 #include <stdbool.h>
@@ -13,8 +15,6 @@
 #include <terminal.h>
 #include <util.h>
 #include <word_completion.h>
-#include <levenshtein_matcher.h>
-#include <language_matcher.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -201,7 +201,8 @@ char *getWordAtIndex(const char *str, const int index, int rowsize) {
 
   // move backwards until non-alphabet char encountered
   int start = index;
-  while (start > 0 && isAlphabetChar(str[start - 1])) {
+  while (start > 0 && (isAlphabetChar(str[start - 1]) ||
+                       ((EC.mode == LANGUAGE) && (str[start - 1] != ' ')))) {
     start--;
   }
 
