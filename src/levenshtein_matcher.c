@@ -11,16 +11,16 @@
 
 TrieNode *root;
 
-struct LevenshteinSuggestion {
+typedef struct LevenshteinSuggestion {
   char *word;
   int distance;
 } LevenshteinSuggestion;
 
 int compareLevenshteinSuggestions(const Node *a, const Node *b) {
-  const struct LevenshteinSuggestion *sA =
-      (const struct LevenshteinSuggestion *)a->data;
-  const struct LevenshteinSuggestion *sB =
-      (const struct LevenshteinSuggestion *)b->data;
+  LevenshteinSuggestion *sA =
+      (LevenshteinSuggestion *)a->data;
+  LevenshteinSuggestion *sB =
+      (LevenshteinSuggestion *)b->data;
   return sA->distance - sB->distance;
 }
 
@@ -39,7 +39,7 @@ void dfsLevenshtein(TrieNode *root, List *suggestions, int *count, char *current
 
   // Word hit
   if (root->isEndOfWord) {
-    struct LevenshteinSuggestion suggestion;
+    LevenshteinSuggestion suggestion;
     suggestion.word = (char *)malloc(strlen(currentWord) + 1);
     strcpy(suggestion.word, currentWord);
     suggestion.distance = currentDistance;
