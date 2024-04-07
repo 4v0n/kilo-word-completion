@@ -9,7 +9,6 @@ This file prototypes a weighted trie structure and its relevant functions
 #include <list.h>
 
 #define ALPHABET_SIZE 26
-#define MAX_SUGGESTIONS 5
 
 typedef struct TrieNode {
   struct TrieNode *children[ALPHABET_SIZE];

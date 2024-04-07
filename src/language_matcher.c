@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <terminal.h>
-
+#include <word_completion.h>
 
 /*** Custom lang Trie ***/
 
@@ -67,7 +67,7 @@ LangTrieNode *LTgetTrieLeaf(LangTrieNode *root, const char *prefix) {
     return root; // reached end of prefix
   }
 
-  int index = *prefix - 'a';
+  int index = *prefix;
   if (index < 0 || index >= 128 || root->children[index] == NULL) { 
     return NULL; // abort if out of bounds / not part of trie
   }
@@ -90,12 +90,72 @@ void LTfreeTrie(LangTrieNode *root) {
   free(root);
 }
 
+void LTdfs(LangTrieNode *root, List *suggestions, int *count, char *currentWord,
+         int depth) {
+
+  if (!root) {
+    return;
+  }
+
+  // word hit
+  if (root->isEndOfWord) {
+    currentWord[depth] = '\0';
+
+    Suggestion suggestion;
+    suggestion.word = (char *)malloc(strlen(currentWord) + 1);
+    strcpy(suggestion.word, currentWord);
+
+    addElement(suggestions, &suggestion, sizeof(suggestion));
+
+    (*count)++;
+  }
+
+  // visit all children nodes
+  for (int i = 0; i < 128; i++) {
+    if (root->children[i]) {
+      currentWord[depth] = i;  // append current char to word
+      currentWord[depth + 1] = '\0'; // null terminate string
+      LTdfs(root->children[i], suggestions, count, currentWord, depth + 1);
+      currentWord[depth] = '\0'; // remove last char
+    }
+  }
+}
+
 /*** Language Matcher functions ***/
 
 LangTrieNode *root;
 
+int compareLT(const Node *a, const Node *b) {
+  Suggestion *suggestionA = (Suggestion *)a->data;
+  Suggestion *suggestionB = (Suggestion *)b->data;
+  return suggestionB->weight - suggestionA->weight;
+}
+
 List *langGetSuggestions(const char *word){
+  LangTrieNode *leaf = LTgetTrieLeaf(root, word);
+  if (!leaf)
+    return NULL;
+
+  List suggestions = *createList();
+  int count = 0;
+  char currentWord[100] = {0};
+
+  // Use the lowercase prefix
+  strncpy(currentWord, word, strlen(word));
+
+  LTdfs(leaf, &suggestions, &count, currentWord, strlen(word));
+  sortList(&suggestions, compareLT);
+
   List *result = createList();
+  int numSuggestions = (count < MAX_SUGGESTIONS) ? count : MAX_SUGGESTIONS;
+
+  for (int i = 0; i < numSuggestions; i++) {
+    Suggestion currentSuggestion =
+        *(Suggestion *)getListElement(&suggestions, i);
+    addElement(result, currentSuggestion.word,
+               strlen(currentSuggestion.word) + 1);
+  }
+
   return result;
 }
 

@@ -7,7 +7,9 @@
 
 #define WORDS_PATH "../resources/words.csv"
 #define WORD_COMPLETE_HELP "HELP: Ctrl-enter = complete | Ctrl-a/d = Select | Ctrl-w = Switch Mode"
+
 #define MAX_PREFIX_LENGTH 10
+#define MAX_SUGGESTIONS 5
 
 enum completionModes { PREFIX = 0, FUZZY, LANGUAGE};
 #define NUM_MODES 3
