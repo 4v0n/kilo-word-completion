@@ -202,7 +202,7 @@ char *getWordAtIndex(const char *str, const int index, int rowsize) {
   // move backwards until non-alphabet char encountered
   int start = index;
   while (start > 0 && (isAlphabetChar(str[start - 1]) ||
-                       ((EC.mode == LANGUAGE) && (str[start - 1] != ' ')))) {
+                       ((EC.mode == LANGUAGE) && (str[start - 1] != ' ') && (str[start - 1] != '\t')))) {
     start--;
   }
 

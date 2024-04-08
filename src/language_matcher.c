@@ -11,6 +11,7 @@
 typedef struct LangTrieNode {
   struct LangTrieNode *children[128]; // 128 ascii characters
   bool isEndOfWord;
+  char *shortcutExpansion;
 } LangTrieNode;
 
 // Initialises and returns the root node of a trie
@@ -21,6 +22,7 @@ LangTrieNode *LTgetNode() {
   // initialise trie
   if (parentNode) {
     parentNode->isEndOfWord = false;
+    parentNode->shortcutExpansion = NULL;
     for (int i = 0; i < 128; i++)
       parentNode->children[i] = NULL;
   }
@@ -62,6 +64,29 @@ void LTinsert(struct LangTrieNode *root, const char *key) {
   pCrawl->isEndOfWord = true;
 }
 
+void LTinsertShortcut(LangTrieNode *root, const char *key, const char *expansion) {
+  if (key == NULL || expansion == NULL) return;
+  int length = strlen(key);
+  if (length == 0) return; // No valid keyword to insert
+  
+  struct LangTrieNode *pCrawl = root;
+  for (int level = 0; level < length; level++) {
+    int index = (unsigned char)key[level];
+    if (index < 0 || index >= 128) continue;
+    if (!pCrawl->children[index]) {
+      pCrawl->children[index] = LTgetNode();
+    }
+    pCrawl = pCrawl->children[index];
+  }
+
+  // Allocate memory for the shortcut expansion and copy the string
+  int expansionLength = strlen(expansion) + 1; // Include space for the null terminator
+  pCrawl->shortcutExpansion = (char*) malloc(expansionLength * sizeof(char));
+  if (pCrawl->shortcutExpansion) {
+      memcpy(pCrawl->shortcutExpansion, expansion, expansionLength);
+  }
+}
+
 LangTrieNode *LTgetTrieLeaf(LangTrieNode *root, const char *prefix) {
   if (prefix == NULL || *prefix == '\0') {
     return root; // reached end of prefix
@@ -85,6 +110,7 @@ void LTfreeTrie(LangTrieNode *root) {
       LTfreeTrie(root->children[i]);
     }
   }
+  free(root->shortcutExpansion);
 
   // Free the root node after all its children have been freed
   free(root);
@@ -97,12 +123,24 @@ void LTdfs(LangTrieNode *root, List *suggestions, int *count, char *currentWord,
     return;
   }
 
+  // shortcut
+  if (root->shortcutExpansion != NULL) {
+    Suggestion suggestion;
+    suggestion.word = (char *)malloc(strlen(root->shortcutExpansion) + 1);
+    suggestion.word = root->shortcutExpansion;
+    suggestion.weight = 2;
+    addElement(suggestions, &suggestion, sizeof(suggestion));
+
+    (*count)++;
+  }
+
   // word hit
   if (root->isEndOfWord) {
     currentWord[depth] = '\0';
 
     Suggestion suggestion;
     suggestion.word = (char *)malloc(strlen(currentWord) + 1);
+    suggestion.weight = 1;
     strcpy(suggestion.word, currentWord);
 
     addElement(suggestions, &suggestion, sizeof(suggestion));
@@ -124,6 +162,15 @@ void LTdfs(LangTrieNode *root, List *suggestions, int *count, char *currentWord,
 /*** Language Matcher functions ***/
 
 LangTrieNode *root;
+
+typedef struct KV{
+  char *key;
+  char *value;
+} KV;
+
+struct KV shortcuts[] = {
+  {"itemize","\\begin{itemize}"}
+};
 
 int compareLT(const Node *a, const Node *b) {
   Suggestion *suggestionA = (Suggestion *)a->data;
@@ -169,9 +216,13 @@ bool initLangM() {
   }
 
   char **keywords = E->syntax->keywords;
-
   for (int i = 0; keywords[i] != NULL; i++) {
     LTinsert(root, keywords[i]);
+  }
+
+  // Insert shortcuts and their expansions into the trie
+  for (int i = 0; shortcuts[i].key != NULL; i++) {
+    LTinsertShortcut(root, shortcuts[i].key, shortcuts[i].value);
   }
 
   return true;
