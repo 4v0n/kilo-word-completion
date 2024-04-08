@@ -87,7 +87,7 @@ void LTinsertShortcut(LangTrieNode *root, const char *key, const char *expansion
       expansionLength--;
     }
 
-      memcpy(pCrawl->shortcutExpansion, expansion, expansionLength);
+    memcpy(pCrawl->shortcutExpansion, expansion, expansionLength);
   }
 }
 

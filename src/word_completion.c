@@ -175,11 +175,13 @@ void completeWord() {
 
   char *word = (char *)getListElement(&EC.suggestions, EC.selection);
 
+  for (int i = 0; i < (int)strlen(EC.prefix); i++) {
+    editorDelChar();
+  }
+
   // insert characters of word into editor
   for (int i = 0; i < ((int)strlen(word)); i++) {
-    if (i > ((int)strlen(EC.prefix) - 1)) {
-      editorInsertChar(word[i]);
-    }
+    editorInsertChar(word[i]);
   }
 
   editorInsertChar(' ');
