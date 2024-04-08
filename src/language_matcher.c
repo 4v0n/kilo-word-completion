@@ -80,9 +80,13 @@ void LTinsertShortcut(LangTrieNode *root, const char *key, const char *expansion
   }
 
   // Allocate memory for the shortcut expansion and copy the string
-  int expansionLength = strlen(expansion) + 1; // Include space for the null terminator
+  int expansionLength = strlen(expansion); // Include space for the null terminator
   pCrawl->shortcutExpansion = (char*) malloc(expansionLength * sizeof(char));
   if (pCrawl->shortcutExpansion) {
+    if (expansionLength > 0 && expansion[expansionLength - 1] == '|') {
+      expansionLength--;
+    }
+
       memcpy(pCrawl->shortcutExpansion, expansion, expansionLength);
   }
 }
@@ -213,6 +217,7 @@ bool initLangM() {
 
   // Insert shortcuts and their expansions into the trie
   for (int i = 0; E->syntax->shortcuts[i].key != NULL; i++) {
+    LTinsert(root, E->syntax->shortcuts[i].value);
     LTinsertShortcut(root, E->syntax->shortcuts[i].key, E->syntax->shortcuts[i].value);
   }
 

@@ -54,7 +54,7 @@ char *LaTeX_HL_keywords[] = {
 };
 
 struct KV LaTeX_shortcuts[] = {
-  {"itemize","\\begin{itemize}"}
+  {"itemize","\\begin{itemize}|"}
 };
 
 enum IDs { C = 0, LaTeX };
