@@ -79,6 +79,11 @@ enum editorHighlight {
 
 /* structs  */
 
+typedef struct KV{
+  char *key;
+  char *value;
+} KV;
+
 // details about file type
 struct editorSyntax {
   int id;
@@ -86,6 +91,7 @@ struct editorSyntax {
   char **
       filematch; // array of strings, each a pattern to match a filename against
   char **keywords; // arrays of strings of keywords
+  struct KV *shortcuts;
   char *singleline_comment_start;
   char *multiline_comment_start;
   char *multiline_comment_end;

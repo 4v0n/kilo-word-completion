@@ -163,15 +163,6 @@ void LTdfs(LangTrieNode *root, List *suggestions, int *count, char *currentWord,
 
 LangTrieNode *root;
 
-typedef struct KV{
-  char *key;
-  char *value;
-} KV;
-
-struct KV shortcuts[] = {
-  {"itemize","\\begin{itemize}"}
-};
-
 int compareLT(const Node *a, const Node *b) {
   Suggestion *suggestionA = (Suggestion *)a->data;
   Suggestion *suggestionB = (Suggestion *)b->data;
@@ -221,8 +212,8 @@ bool initLangM() {
   }
 
   // Insert shortcuts and their expansions into the trie
-  for (int i = 0; shortcuts[i].key != NULL; i++) {
-    LTinsertShortcut(root, shortcuts[i].key, shortcuts[i].value);
+  for (int i = 0; E->syntax->shortcuts[i].key != NULL; i++) {
+    LTinsertShortcut(root, E->syntax->shortcuts[i].key, E->syntax->shortcuts[i].value);
   }
 
   return true;

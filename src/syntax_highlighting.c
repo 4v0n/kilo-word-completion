@@ -53,12 +53,16 @@ char *LaTeX_HL_keywords[] = {
   NULL
 };
 
+struct KV LaTeX_shortcuts[] = {
+  {"itemize","\\begin{itemize}"}
+};
+
 enum IDs { C = 0, LaTeX };
 
 struct editorSyntax HLDB[] = {
-    {C, "c", C_HL_extensions, C_HL_keywords, "//", "/*", "*/",
+    {C, "c", C_HL_extensions, C_HL_keywords, NULL, "//", "/*", "*/",
      HL_HIGHLIGHT_NUMBERS | HL_HIGHLIGHT_STRINGS},
-    {LaTeX, "LaTeX", LaTeX_HL_extensions, LaTeX_HL_keywords, "%",
+    {LaTeX, "LaTeX", LaTeX_HL_extensions, LaTeX_HL_keywords, LaTeX_shortcuts, "%",
      "\\begin{comment}", "\\end{comment}", HL_HIGHLIGHT_STRINGS}};
 
 #define HLDB_ENTRIES (sizeof(HLDB) / sizeof(HLDB[0]))
