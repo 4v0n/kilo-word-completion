@@ -15,6 +15,7 @@
 #include <terminal.h>
 #include <util.h>
 #include <word_completion.h>
+#include <input.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -187,8 +188,10 @@ void completeWord() {
   if (EC.mode == LANGUAGE) {
     pairing pairing = getLanguagePairing(word);
     if (pairing.pairing) {
+      int relativeCPos = 0;
       for (int i = 0; i < (int)strlen(pairing.pairing); i++) {
         char currentChar = pairing.pairing[i];
+        relativeCPos++;
 
         if ((currentChar == '\r') || (currentChar == '\n')) {
           editorInsertNewLine();
@@ -197,6 +200,12 @@ void completeWord() {
 
         editorInsertChar(currentChar);
       }
+
+      int backtrack = relativeCPos - pairing.relativeCursorPosition;
+      for (int i = 0; i < backtrack; i++) {
+        editorMoveCursor(ARROW_LEFT);
+      }
+
     } else {
       editorInsertChar(' ');
     }

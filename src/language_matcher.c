@@ -240,7 +240,6 @@ bool initLangM() {
 
   // Insert shortcuts and their expansions into the trie
   for (int i = 0; E->syntax->shortcuts[i].key != NULL; i++) {
-    char *current = E->syntax->shortcuts[i].value;
     LTinsert(root, E->syntax->shortcuts[i].value);
     LTinsertShortcut(root, E->syntax->shortcuts[i].key, E->syntax->shortcuts[i].value);
   }

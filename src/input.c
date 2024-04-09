@@ -209,7 +209,7 @@ void editorProcessKeypress() {
     toggleWordCompletionEngine();
     break;
 
-  case CTRL_KEY('b'):
+  case CTRL_KEY('\n'):
     completeWord();
     break;
 
