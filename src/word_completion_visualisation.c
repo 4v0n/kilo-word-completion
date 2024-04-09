@@ -3,8 +3,7 @@
 #include <terminal.h>
 #include <word_completion.h>
 #include <word_completion_visualisation.h>
-
-#define VISUALISATION_BOX_SIZE 6
+#include <prefix_matcher.h>
 
 bool isActive = false;
 
@@ -21,7 +20,7 @@ void toggleVisualisation() {
     return;
   }
 
-  if (E->screenrows < VISUALISATION_BOX_SIZE*2) {
+  if (E->screenrows < MAX_SUGGESTIONS*2) {
     editorSetStatusMessage("Your current terminal is too small for visualisation!");
     return;
   }
@@ -29,20 +28,21 @@ void toggleVisualisation() {
   isActive = !isActive;
 
   if (isActive) {
-    E->screenrows = E->screenrows - VISUALISATION_BOX_SIZE;
+    E->screenrows = E->screenrows - MAX_SUGGESTIONS;
   } else {
-    E->screenrows = E->screenrows + VISUALISATION_BOX_SIZE;
+    E->screenrows = E->screenrows + MAX_SUGGESTIONS;
   }
 }
 
 void fillRows(struct abuf *ab) {
   struct editorConfig *E = getEditorConfig();
-  for (int i = 0; i < VISUALISATION_BOX_SIZE; i++) {
+  for (int i = 0; i < MAX_SUGGESTIONS; i++) {
     int len = 0;
     while (len < E->screencols) {
-    abAppend(ab, " ", 1); // fill with spaces
-    len++;
+      abAppend(ab, " ", 1); // fill with spaces
+      len++;
     }
+    abAppend(ab, "\r\n", 2);   // newline
   }
 }
 
@@ -52,6 +52,8 @@ void drawVisualisation(struct abuf *ab) {
   struct engineConfig *EC = getEngineConfig();
   switch (EC->mode) {
     case PREFIX:
+      visualisePM(ab);
+      break;
     case FUZZY:
     case LANGUAGE:
 
