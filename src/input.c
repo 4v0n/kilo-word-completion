@@ -15,10 +15,11 @@
 #include <output.h>
 #include <search.h>
 #include <stdlib.h>
+#include <string.h>
 #include <terminal.h>
 #include <unistd.h>
 #include <word_completion.h>
-#include <string.h>
+#include <word_completion_visualisation.h>
 
 /*** defines ***/
 #define CTRL_KEY(k) ((k) & 0x1f) // bitwise AND character with 00011111
@@ -126,8 +127,7 @@ void autoPair(char c) {
     return;
   }
 
-  switch (c)
-  {
+  switch (c) {
   case '{':
     editorInsertChar('}');
     break;
@@ -139,7 +139,7 @@ void autoPair(char c) {
   case '(':
     editorInsertChar(')');
     break;
-  
+
   default:
     editorInsertChar(c);
     break;
@@ -203,6 +203,10 @@ void editorProcessKeypress() {
     }
 
     editorSetStatusMessage(HELP_MESSAGE);
+    break;
+
+  case CTRL_KEY('p'):
+    toggleVisualisation();
     break;
 
   case CTRL_KEY('o'):

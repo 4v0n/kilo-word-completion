@@ -15,6 +15,7 @@ SRCS = src/terminal.c \
       src/levenshtein.c \
       src/levenshtein_matcher.c \
       src/language_matcher.c \
+      src/word_completion_visualisation.c \
       src/util.c
 
 TESTS = tests/test_trie.c \

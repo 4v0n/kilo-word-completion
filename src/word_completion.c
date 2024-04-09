@@ -4,6 +4,7 @@
 
 #include <ctype.h>
 #include <editor_operations.h>
+#include <input.h>
 #include <language_matcher.h>
 #include <levenshtein_matcher.h>
 #include <output.h>
@@ -15,7 +16,7 @@
 #include <terminal.h>
 #include <util.h>
 #include <word_completion.h>
-#include <input.h>
+#include <word_completion_visualisation.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -150,6 +151,10 @@ void toggleWordCompletionEngine() {
     getEditorConfig()->screenrows--;
   } else {
     getEditorConfig()->screenrows++;
+
+    if (isVisualisationActive()) {
+      toggleVisualisation();
+    }
   }
 }
 
@@ -231,7 +236,8 @@ char *getWordAtIndex(const char *str, const int index, int rowsize) {
   // move backwards until non-alphabet char encountered
   int start = index;
   while (start > 0 && (isAlphabetChar(str[start - 1]) ||
-                       ((EC.mode == LANGUAGE) && (str[start - 1] != ' ') && (str[start - 1] != '\t')))) {
+                       ((EC.mode == LANGUAGE) && (str[start - 1] != ' ') &&
+                        (str[start - 1] != '\t')))) {
     start--;
   }
 

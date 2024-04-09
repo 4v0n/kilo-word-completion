@@ -213,6 +213,11 @@ List *langGetSuggestions(const char *word){
 
 pairing getLanguagePairing(const char *word) {
   struct editorConfig *E = getEditorConfig();
+  pairing temp = {NULL, NULL, 0};
+
+  if (!E->syntax->pairings) {
+    return temp;
+  }
 
   for (int i = 0; E->syntax->pairings[i].word != NULL; i++) {
     if (strcmp(E->syntax->pairings[i].word, word) == 0) {
@@ -220,7 +225,6 @@ pairing getLanguagePairing(const char *word) {
     }
   }
 
-  pairing temp = {NULL, NULL, 0};
   return temp;
 }
 
@@ -239,6 +243,10 @@ bool initLangM() {
   }
 
   // Insert shortcuts and their expansions into the trie
+  if (!E->syntax->shortcuts) {
+    return true;
+  }
+
   for (int i = 0; E->syntax->shortcuts[i].key != NULL; i++) {
     LTinsert(root, E->syntax->shortcuts[i].value);
     LTinsertShortcut(root, E->syntax->shortcuts[i].key, E->syntax->shortcuts[i].value);
