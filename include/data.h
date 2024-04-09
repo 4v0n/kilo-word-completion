@@ -84,14 +84,20 @@ typedef struct KV{
   char *value;
 } KV;
 
+typedef struct pairing{
+  char *word;
+  char *pairing;
+  int relativeCursorPosition;
+} pairing;
+
 // details about file type
 struct editorSyntax {
   int id;
   char *filetype; // name of filetype
-  char **
-      filematch; // array of strings, each a pattern to match a filename against
-  char **keywords; // arrays of strings of keywords
+  char **filematch; // file extensions
+  char **keywords; // keywords
   struct KV *shortcuts;
+  struct pairing *pairings;
   char *singleline_comment_start;
   char *multiline_comment_start;
   char *multiline_comment_end;

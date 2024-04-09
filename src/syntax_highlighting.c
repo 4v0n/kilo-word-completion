@@ -14,7 +14,7 @@
 #include <string.h>
 #include <terminal.h>
 
-char *C_HL_extensions[] = {".c", ".h", ".cpp"};
+char *C_HL_extensions[] = {".c", ".h", ".cpp", NULL};
 
 char *C_HL_keywords[] = {"switch",    "if",      "while",   "for",    "break",
                          "continue",  "return",  "else",    "struct", "union",
@@ -22,7 +22,7 @@ char *C_HL_keywords[] = {"switch",    "if",      "while",   "for",    "break",
                          "int|",      "long|",   "double|", "float|", "char|",
                          "unsigned|", "signed|", "void|",   NULL};
 
-char *LaTeX_HL_extensions[] = {".tex"};
+char *LaTeX_HL_extensions[] = {".tex", NULL};
 
 char *LaTeX_HL_keywords[] = {
   "\\documentclass|", "\\usepackage|", "\\begin|", "\\end|", 
@@ -56,15 +56,23 @@ char *LaTeX_HL_keywords[] = {
 struct KV LaTeX_shortcuts[] = {
   {"itemize","\\begin{itemize}|"},
   {"beg", "\\begin|"},
+  {NULL}
+};
+
+struct pairing LaTeX_pairings[] = {
+  {"\\begin{itemize}", "\n\t\n\\end{itemize}", 2},
+  {NULL}
 };
 
 enum IDs { C = 0, LaTeX };
 
+
+
 struct editorSyntax HLDB[] = {
-    {C, "c", C_HL_extensions, C_HL_keywords, NULL, "//", "/*", "*/",
+    {C, "c", C_HL_extensions, C_HL_keywords, NULL, NULL, "//", "/*", "*/",
      HL_HIGHLIGHT_NUMBERS | HL_HIGHLIGHT_STRINGS},
-    {LaTeX, "LaTeX", LaTeX_HL_extensions, LaTeX_HL_keywords, LaTeX_shortcuts, "%",
-     "\\begin{comment}", "\\end{comment}", HL_HIGHLIGHT_STRINGS}};
+    {LaTeX, "LaTeX", LaTeX_HL_extensions, LaTeX_HL_keywords, LaTeX_shortcuts, LaTeX_pairings,
+     "%", "\\begin{comment}", "\\end{comment}", HL_HIGHLIGHT_STRINGS}};
 
 #define HLDB_ENTRIES (sizeof(HLDB) / sizeof(HLDB[0]))
 

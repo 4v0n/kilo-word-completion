@@ -4,8 +4,10 @@
 #include <list.h>
 #include <stdbool.h>
 #include <string.h>
+#include <data.h>
 
 List *langGetSuggestions(const char *word);
+pairing getLanguagePairing(const char *word);
 bool initLangM();
 void destroyLangM();
 

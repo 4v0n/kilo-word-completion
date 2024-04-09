@@ -184,7 +184,25 @@ void completeWord() {
     editorInsertChar(word[i]);
   }
 
-  editorInsertChar(' ');
+  if (EC.mode == LANGUAGE) {
+    pairing pairing = getLanguagePairing(word);
+    if (pairing.pairing) {
+      for (int i = 0; i < (int)strlen(pairing.pairing); i++) {
+        char currentChar = pairing.pairing[i];
+
+        if ((currentChar == '\r') || (currentChar == '\n')) {
+          editorInsertNewLine();
+          continue;
+        }
+
+        editorInsertChar(currentChar);
+      }
+    } else {
+      editorInsertChar(' ');
+    }
+  } else {
+    editorInsertChar(' ');
+  }
 
   // reset prefix
   free(EC.prefix);

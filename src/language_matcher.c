@@ -3,6 +3,8 @@
 #include <string.h>
 #include <terminal.h>
 #include <word_completion.h>
+#include <data.h>
+#include <language_matcher.h>
 
 /*** Custom lang Trie ***/
 
@@ -33,6 +35,10 @@ LangTrieNode *LTgetNode() {
 // Inserts a word into the trie
 // adapted from https://www.geeksforgeeks.org/trie-insert-and-search/
 void LTinsert(struct LangTrieNode *root, const char *key) {
+  if (!key) {
+    return;
+  }
+
   int length = strlen(key);
   
   // Exclude the '|' character at the end of the keyword, if present
@@ -77,6 +83,10 @@ void LTinsertShortcut(LangTrieNode *root, const char *key, const char *expansion
       pCrawl->children[index] = LTgetNode();
     }
     pCrawl = pCrawl->children[index];
+  }
+
+  if (pCrawl->shortcutExpansion) {
+    return;
   }
 
   // Allocate memory for the shortcut expansion and copy the string
@@ -201,6 +211,19 @@ List *langGetSuggestions(const char *word){
   return result;
 }
 
+pairing getLanguagePairing(const char *word) {
+  struct editorConfig *E = getEditorConfig();
+
+  for (int i = 0; E->syntax->pairings[i].word != NULL; i++) {
+    if (strcmp(E->syntax->pairings[i].word, word) == 0) {
+      return E->syntax->pairings[i];
+    }
+  }
+
+  pairing temp = {NULL, NULL, 0};
+  return temp;
+}
+
 bool initLangM() {
   root = LTgetNode();
 
@@ -217,6 +240,7 @@ bool initLangM() {
 
   // Insert shortcuts and their expansions into the trie
   for (int i = 0; E->syntax->shortcuts[i].key != NULL; i++) {
+    char *current = E->syntax->shortcuts[i].value;
     LTinsert(root, E->syntax->shortcuts[i].value);
     LTinsertShortcut(root, E->syntax->shortcuts[i].key, E->syntax->shortcuts[i].value);
   }
