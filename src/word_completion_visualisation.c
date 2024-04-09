@@ -35,7 +35,31 @@ void toggleVisualisation() {
   }
 }
 
+void fillRows(struct abuf *ab) {
+  struct editorConfig *E = getEditorConfig();
+  for (int i = 0; i < VISUALISATION_BOX_SIZE; i++) {
+    int len = 0;
+    while (len < E->screencols) {
+    abAppend(ab, " ", 1); // fill with spaces
+    len++;
+    }
+  }
+}
+
 void drawVisualisation(struct abuf *ab) {
   abAppend(ab, "\x1b[44m", 5);
+  
+  struct engineConfig *EC = getEngineConfig();
+  switch (EC->mode) {
+    case PREFIX:
+    case FUZZY:
+    case LANGUAGE:
+
+    default:
+      fillRows(ab);
+      editorSetStatusMessage("Failed to draw visualisation!");
+      break;
+  }
+
   abAppend(ab, "\x1b[m", 3); // switch back to normal
 }
