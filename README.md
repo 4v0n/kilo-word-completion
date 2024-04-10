@@ -30,16 +30,16 @@ An extension of the Kilo text editor to feature prefix and fuzzy match word comp
 2. Build the project.
 
 ```bash
-    make main #builds the text editor
-    make debug #builds the text editor with debug flag
-    make tests #builds tests
+  make main #builds the text editor
+  make debug #builds the text editor with debug flag
+  make tests #builds tests
 ```
 
 3. Navigate into the build directory and run the text editor.
 
 ```bash
-    cd build
-    ./kilo
+  cd build
+  ./kilo
 ```
 
 To open a file using the text editor:
