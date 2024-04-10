@@ -24,7 +24,7 @@ TESTS = tests/test_trie.c \
         tests/test_list.c \
         tests/test_levenshtein.c
 
-.PHONY: main debug test clean
+.PHONY: main debug tests clean
 
 main: $(SRCS) src/main.c | build
 	$(CC) $(CFLAGS_RELEASE) $^ -o build/kilo
