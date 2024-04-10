@@ -1,6 +1,7 @@
 #include <CUnit/Basic.h>
 #include <list.h>
 #include <trie.h>
+#include <word_completion.h>
 
 TrieNode *root;
 

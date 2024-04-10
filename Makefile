@@ -32,8 +32,9 @@ main: $(SRCS) src/main.c | build
 debug: $(SRCS) src/main.c | build
 	$(CC) $(CFLAGS_DEBUG) $^ -o build/kilo_debug
 
+# Requires CUnit - install using: sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev
 tests: $(SRCS) $(TESTS) tests/test_runner.c | build
-	$(CC) $(CFLAGS) $^ -o build/tests -I. -lcunit
+	$(CC) $(CFLAGS_DEBUG) $^ -o build/tests -I. -lcunit
 
 build:
 	mkdir -p build
