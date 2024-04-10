@@ -1,3 +1,7 @@
+/*
+  This file handles language-specific word completion
+*/
+
 #include <data.h>
 #include <language_matcher.h>
 #include <list.h>
@@ -10,12 +14,17 @@
 
 /*** Custom lang Trie ***/
 
-// Alternative implementation of existing trie to deal with all ASCII characters
+/*
+  Alternative implementation of existing trie to deal with all ASCII characters
+
+  The logic is exactly the same as in trie.c but with an extra field for shortcuts
+  and accomodation for all 128 ASCII characters
+*/
 
 typedef struct LangTrieNode {
   struct LangTrieNode *children[128]; // 128 ascii characters
   bool isEndOfWord;
-  char *shortcutExpansion;
+  char *shortcutExpansion; // provides shortcut to a keyword
 } LangTrieNode;
 
 // Initialises and returns the root node of a trie
@@ -72,6 +81,7 @@ void LTinsert(struct LangTrieNode *root, const char *key) {
   pCrawl->isEndOfWord = true;
 }
 
+// inserts a shortcut into the trie
 void LTinsertShortcut(LangTrieNode *root, const char *key,
                       const char *expansion) {
   if (key == NULL || expansion == NULL)
@@ -80,6 +90,7 @@ void LTinsertShortcut(LangTrieNode *root, const char *key,
   if (length == 0)
     return; // No valid keyword to insert
 
+  // navigate to relevant leaf
   struct LangTrieNode *pCrawl = root;
   for (int level = 0; level < length; level++) {
     int index = (unsigned char)key[level];
@@ -91,6 +102,7 @@ void LTinsertShortcut(LangTrieNode *root, const char *key,
     pCrawl = pCrawl->children[index];
   }
 
+  // if shortcut already defined, do not overwrite
   if (pCrawl->shortcutExpansion) {
     return;
   }
@@ -100,6 +112,7 @@ void LTinsertShortcut(LangTrieNode *root, const char *key,
       strlen(expansion); // Include space for the null terminator
   pCrawl->shortcutExpansion = (char *)malloc(expansionLength * sizeof(char));
   if (pCrawl->shortcutExpansion) {
+    // remove syntax highlight flag
     if (expansionLength > 0 && expansion[expansionLength - 1] == '|') {
       expansionLength--;
     }
@@ -108,6 +121,7 @@ void LTinsertShortcut(LangTrieNode *root, const char *key,
   }
 }
 
+// Recursively navigates to a trie leaf
 LangTrieNode *LTgetTrieLeaf(LangTrieNode *root, const char *prefix) {
   if (prefix == NULL || *prefix == '\0') {
     return root; // reached end of prefix
@@ -135,6 +149,7 @@ void LTfreeTrie(LangTrieNode *root) {
   free(root);
 }
 
+// Depth first search through trie to retrieve all words
 void LTdfs(LangTrieNode *root, List *suggestions, int *count, char *currentWord,
            int depth) {
   if (!root) {
@@ -149,7 +164,7 @@ void LTdfs(LangTrieNode *root, List *suggestions, int *count, char *currentWord,
     int expansionLength = strlen(root->shortcutExpansion);
     suggestion.word = (char *)calloc(expansionLength + 1, sizeof(char));
     strcpy(suggestion.word, root->shortcutExpansion);
-    suggestion.weight = 2;
+    suggestion.weight = 2; // priorotise expansion
     addElement(suggestions, &suggestion, sizeof(suggestion));
     (*count)++;
   }
@@ -186,6 +201,7 @@ int compareLT(const Node *a, const Node *b) {
   return suggestionB->weight - suggestionA->weight;
 }
 
+// Returns a list of the top relevant suggestions to the prefix
 List *langGetSuggestions(const char *word) {
   LangTrieNode *leaf = LTgetTrieLeaf(root, word);
   if (!leaf)
@@ -205,6 +221,7 @@ List *langGetSuggestions(const char *word) {
   List *result = createList();
   int numSuggestions = (count < MAX_SUGGESTIONS) ? count : MAX_SUGGESTIONS;
 
+  // get first MAX_SUGGESTIONS
   for (int i = 0; i < numSuggestions; i++) {
     Suggestion currentSuggestion =
         *(Suggestion *)getListElement(&suggestions, i);
@@ -215,10 +232,12 @@ List *langGetSuggestions(const char *word) {
   return result;
 }
 
+// Gets a pairing to a keyword from the language
 pairing getLanguagePairing(const char *word) {
   struct editorConfig *E = getEditorConfig();
   pairing temp = {NULL, NULL, 0};
 
+  // if there are no pairings return empty pairing
   if (!E->syntax->pairings) {
     return temp;
   }
@@ -232,25 +251,29 @@ pairing getLanguagePairing(const char *word) {
   return temp;
 }
 
+// Initialise language matcher
 bool initLangM() {
   root = LTgetNode();
 
   struct editorConfig *E = getEditorConfig();
 
+  // no syntax for language
   if (!E->syntax) {
     return false;
   }
 
+  // insert keywords into trie
   char **keywords = E->syntax->keywords;
   for (int i = 0; keywords[i] != NULL; i++) {
     LTinsert(root, keywords[i]);
   }
 
-  // Insert shortcuts and their expansions into the trie
+  // If no shortcuts, finish
   if (!E->syntax->shortcuts) {
     return true;
   }
 
+  // insert shortcuts into trie
   for (int i = 0; E->syntax->shortcuts[i].key != NULL; i++) {
     LTinsert(root, E->syntax->shortcuts[i].value);
     LTinsertShortcut(root, E->syntax->shortcuts[i].key,
@@ -260,8 +283,10 @@ bool initLangM() {
   return true;
 }
 
+// destroys language matcher
 void destroyLangM() { LTfreeTrie(root); }
 
+// filters special characters out of a string
 void filterString(char *src, char *dest) {
     int j = 0;
     for (int i = 0; src[i] != '\0'; i++) {
@@ -272,14 +297,24 @@ void filterString(char *src, char *dest) {
     dest[j] = '\0';
 }
 
+// Draws visualisation of language matcher
 void visualiseLangM(struct abuf *ab) {
+  /*
+    this function simply visualises the route taken down
+    the trie to reach the suggested word
+
+    Although the function does'nt directly use the trie,
+    it demonstrates how the trie works and is used in this
+    application.
+  */
+
   struct engineConfig *EC = getEngineConfig();
   struct editorConfig *E = getEditorConfig();
 
-  int lines = 0;
+  int lines = 0; // number of lines written
   while (lines < MAX_SUGGESTIONS) {
-    int len = 0;
-    // Allocate and initialize the memory to avoid using uninitialized memory.
+    int len = 0; // length of string to be written
+    // Allocate and initialize the memory
     char *string = malloc((E->screencols * 2) * sizeof(char));
     if (string == NULL) {
       // Handle memory allocation failure, if needed.
@@ -288,11 +323,13 @@ void visualiseLangM(struct abuf *ab) {
     string[0] = '\0'; // Initialize to an empty string for safe use with strcat.
 
     if (lines < EC->suggestions.size) {
+      // current suggestion
       char *word = (char *)getListElement(&EC->suggestions, lines);
 
       strcat(string, word);
       strcat(string, " = ");
 
+      // chain of characters
       for (int i = 0; i < (int)strlen(word); i++) {
         char tempStr[3] = {word[i], '\0'};
         strcat(string, tempStr);
@@ -301,6 +338,7 @@ void visualiseLangM(struct abuf *ab) {
         }
       }
 
+      // pairing to keyword
       pairing pair = getLanguagePairing(word);
       if (pair.pairing) {
         strcat(string, " | Pairing = ");
@@ -312,18 +350,22 @@ void visualiseLangM(struct abuf *ab) {
       len = strlen(string);
     }
 
+    // truncate if too long
     if (len > E->screencols) {
       len = E->screencols;
     }
 
+    // fill with spaces if too short
     while (len < E->screencols) {
       strcat(string, " "); // Fill with spaces safely
       len++;
     }
 
+    // write to buffer
     abAppend(ab, string, len);
     abAppend(ab, "\r\n", 2); // Newline
     lines++;
-    free(string); // Ensure to free the allocated string to avoid memory leaks.
+    
+    free(string); // free string
   }
 }

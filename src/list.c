@@ -1,8 +1,13 @@
+/*
+  This file defines the logic of a linked list structure
+*/
+
 #include <list.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+// Creates a list
 List *createList() {
   List *list = (List *)malloc(sizeof(List));
   list->head = NULL;
@@ -33,15 +38,18 @@ Node *getListNode(const List *list, const int index) {
   return NULL;
 }
 
+// Adds an element to the end of the list
 void addElement(List *list, const void *data, const size_t dataSize) {
   if (data == NULL || list == NULL || dataSize <= 0)
     return;
 
+  // create a new node for the element
   Node *newNode = (Node *)malloc(sizeof(Node));
   newNode->data = malloc(dataSize);
   newNode->next = NULL;
   memcpy(newNode->data, data, dataSize);
 
+  // navigate to end of list and place new node
   if (list->head == NULL) {
     list->head = newNode;
   } else {
@@ -49,9 +57,11 @@ void addElement(List *list, const void *data, const size_t dataSize) {
     prevNode->next = newNode;
   }
 
+  // update size of list
   list->size++;
 }
 
+// Returns the node of the list in the repsective index
 void *getListElement(const List *list, const int index) {
   Node *node = getListNode(list, index);
 
@@ -63,6 +73,7 @@ void *getListElement(const List *list, const int index) {
 }
 
 // adapted from https://www.geeksforgeeks.org/merge-sort-for-linked-list/
+// splits two linnked list into two halves
 void frontBackSplit(struct Node* source, struct Node** frontRef, struct Node** backRef) {
   struct Node *fast;
   struct Node *slow;
@@ -114,6 +125,7 @@ void mergeSort(struct Node **headRef, Comparator comp) {
     return;
   }
 
+  // split lists
   frontBackSplit(head, &a, &b);
 
   mergeSort(&a, comp);
@@ -122,6 +134,7 @@ void mergeSort(struct Node **headRef, Comparator comp) {
   *headRef = sortedMerge(a,b, comp);
 }
 
+// Sorts the list using mergeSort, using a custom comparator function
 void sortList(List *list, Comparator comp) {
   if (list->head == NULL || comp == NULL) {
     return;
@@ -129,6 +142,7 @@ void sortList(List *list, Comparator comp) {
   mergeSort(&list->head, comp);
 }
 
+// Empties the list
 void emptyList(List *list) {
   Node *current = list->head;
   while (current != NULL) {
@@ -141,6 +155,7 @@ void emptyList(List *list) {
   list->size = 0;    // Reset size to 0
 }
 
+// Frees the list
 void freeList(List *list) {
   emptyList(list);
   free(list);

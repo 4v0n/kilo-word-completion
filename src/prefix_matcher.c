@@ -1,3 +1,7 @@
+/*
+  This function handles prefix match word completion
+*/
+
 #include <output.h>
 #include <prefix_matcher.h>
 #include <stdbool.h>
@@ -13,6 +17,7 @@
 
 TrieNode *root;
 
+// Returns the first suggestions relevant to the prefix
 List *pmGetSuggestions(const char *word) {
   List *suggestions = getSuggestions(root, word);
   if (suggestions != NULL) {
@@ -22,6 +27,7 @@ List *pmGetSuggestions(const char *word) {
   return NULL;
 }
 
+// Initialises the prefix matcher
 bool initPM() {
   root = getNode();
   FILE *file = fopen(WORDS_PATH, "r");
@@ -49,7 +55,14 @@ bool initPM() {
 
 void destroyPM() { freeTrie(root); }
 
+// Visualises the prefix matcher
 void visualisePM(struct abuf *ab) {
+  /*
+    Although not using the trie directly in visualisation,
+    this function demonstrates how each suggestion is made
+    by going down the trie and turning the chain into a string.
+  */
+
   struct engineConfig *EC = getEngineConfig();
   struct editorConfig *E = getEditorConfig();
 
@@ -72,6 +85,7 @@ void visualisePM(struct abuf *ab) {
 
       TrieNode *leafNode = getTrieLeaf(root, word);
 
+      // showcase chain of characters making up suggestion
       for (int i = 0; i < (int)strlen(word); i++) {
         char tempStr[3] = {word[i], '\0'};
         strcat(string, tempStr);
@@ -80,6 +94,7 @@ void visualisePM(struct abuf *ab) {
         }
       }
 
+      // Append weight of suggestion
       strcat(string, " | weight: ");
       char weightStr[20]; // Adjust size as needed
       sprintf(weightStr, "%d", leafNode->weight);
@@ -100,6 +115,7 @@ void visualisePM(struct abuf *ab) {
     abAppend(ab, string, len);
     abAppend(ab, "\r\n", 2); // Newline
     lines++;
+    
     free(string); // Ensure to free the allocated string to avoid memory leaks.
   }
 }

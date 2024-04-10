@@ -1,3 +1,7 @@
+/*
+  This file manages the visualisation of the word completion engines
+*/
+
 #include <data.h>
 #include <language_matcher.h>
 #include <levenshtein_matcher.h>
@@ -11,6 +15,7 @@ bool isActive = false;
 
 bool isVisualisationActive() { return isActive; }
 
+// Toggles the visualisation
 void toggleVisualisation() {
   struct engineConfig *EC = getEngineConfig();
   struct editorConfig *E = getEditorConfig();
@@ -35,6 +40,7 @@ void toggleVisualisation() {
   }
 }
 
+// Fills the rows of the visualisation with spaces
 void fillRows(struct abuf *ab) {
   struct editorConfig *E = getEditorConfig();
   for (int i = 0; i < MAX_SUGGESTIONS; i++) {
@@ -48,7 +54,7 @@ void fillRows(struct abuf *ab) {
 }
 
 void drawVisualisation(struct abuf *ab) {
-  abAppend(ab, "\x1b[44m", 5);
+  abAppend(ab, "\x1b[44m", 5); // set colour to blue
 
   struct engineConfig *EC = getEngineConfig();
   switch (EC->mode) {

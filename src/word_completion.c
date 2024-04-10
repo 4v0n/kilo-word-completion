@@ -167,6 +167,7 @@ void wordCompletionChooseCompletion(char c) {
     EC.selection++;
   }
 
+  // make sure selection is not out of bounds
   if (EC.selection > (EC.suggestions.size - 1)) {
     EC.selection = 0;
   } else if (EC.selection < 0) {
@@ -182,6 +183,7 @@ void completeWord() {
 
   char *word = (char *)getListElement(&EC.suggestions, EC.selection);
 
+  // remove currently typed prefix
   for (int i = 0; i < (int)strlen(EC.prefix); i++) {
     editorDelChar();
   }
@@ -191,9 +193,11 @@ void completeWord() {
     editorInsertChar(word[i]);
   }
 
+  // if in language mode, use alternative logic for auto pairing
   if (EC.mode == LANGUAGE) {
     pairing pairing = getLanguagePairing(word);
     if (pairing.pairing) {
+      // if pairing exists, insert pairing
       int relativeCPos = 0;
       for (int i = 0; i < (int)strlen(pairing.pairing); i++) {
         char currentChar = pairing.pairing[i];
@@ -207,6 +211,7 @@ void completeWord() {
         editorInsertChar(currentChar);
       }
 
+      // set cursor position
       int backtrack = relativeCPos - pairing.relativeCursorPosition;
       for (int i = 0; i < backtrack; i++) {
         editorMoveCursor(ARROW_LEFT);

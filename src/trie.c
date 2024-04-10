@@ -1,3 +1,7 @@
+/*
+  This file defines the logic for a weighted trie structure
+*/
+
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -7,7 +11,7 @@
 #include <util.h>
 #include <word_completion.h>
 
-// Initialises and returns the root node of a trie
+// Initialises and returns a node of a trie
 TrieNode *getNode() {
   // allocate memory for trie
   TrieNode *parentNode = malloc(sizeof(TrieNode));
@@ -35,6 +39,7 @@ void insert(struct TrieNode *root, const char *key, int weight) {
 
   struct TrieNode *pCrawl = root;
 
+  // navigate to relevant trie node
   for (int level = 0; level < length; level++) {
     char c = key[level];
     if (isupper(c)) {
@@ -49,10 +54,12 @@ void insert(struct TrieNode *root, const char *key, int weight) {
     pCrawl = pCrawl->children[index];
   }
 
+  // add data to node
   pCrawl->isEndOfWord = true;
   pCrawl->weight = weight;
 }
 
+// Returns the leaf of a trie
 TrieNode *getTrieLeaf(TrieNode *root, const char *prefix) {
   if (prefix == NULL || *prefix == '\0') {
     return root; // reached end of prefix
@@ -66,6 +73,7 @@ TrieNode *getTrieLeaf(TrieNode *root, const char *prefix) {
   return getTrieLeaf(root->children[index], prefix + 1); 
 }
 
+// Uses DFS to return a list of words
 void dfs(TrieNode *root, List *suggestions, int *count, char *currentWord,
          int depth) {
 
@@ -104,6 +112,7 @@ int compare(const Node *a, const Node *b) {
   return suggestionB->weight - suggestionA->weight;
 }
 
+// Returns the first suggestions relevant to the prefix
 List *getSuggestions(TrieNode *root, const char *prefix) {
   char lowerPrefix[MAX_PREFIX_LENGTH + 1] = {0};
 
@@ -112,6 +121,7 @@ List *getSuggestions(TrieNode *root, const char *prefix) {
     lowerPrefix[i] = tolower(prefix[i]);
   }
 
+  // navigate to leaf from prefix
   TrieNode *leaf = getTrieLeaf(root, lowerPrefix);
   if (!leaf)
     return NULL;

@@ -1,3 +1,7 @@
+/*
+  This file handles fuzzy matching, making use of a trie
+*/
+
 #include <ctype.h>
 #include <data.h>
 #include <levenshtein.h>
@@ -61,6 +65,7 @@ void dfsLevenshtein(TrieNode *root, List *suggestions, int *count,
   }
 }
 
+// returns the first half of a string
 char *getFirstHalf(const char *input) {
   int length = strlen(input);
   int halfLength = (length + 1) / 2;  // +1 ensures a single char is copied entirely
@@ -123,8 +128,11 @@ List *lmGetSuggestions(const char *word) {
   return result;
 }
 
+// initialises the word completion engine
 bool initLM() {
   root = getNode();
+
+  // load from words file
   FILE *file = fopen(WORDS_PATH, "r");
 
   if (file == NULL) {
@@ -150,7 +158,14 @@ bool initLM() {
 
 void destroyLM() { freeTrie(root); }
 
+// visualises the workings of the fuzzy matcher
 void visualiseLM(struct abuf *ab) {
+  /*
+    This function simply displays the levenshtein distance
+    between the prefix and the completions offered by the
+    word completion engine.
+  */
+
   struct engineConfig *EC = getEngineConfig();
   struct editorConfig *E = getEditorConfig();
 
@@ -168,10 +183,12 @@ void visualiseLM(struct abuf *ab) {
     if (lines < EC->suggestions.size) {
       char *word = (char *)getListElement(&EC->suggestions, lines);
 
+      // Prefix -> Completion
       strcat(string, EC->prefix);
       strcat(string, " -> ");
       strcat(string, word);
 
+      // Calculate and append levenshtein distance
       strcat(string, " | Levenshtein Distance: ");
       char distanceStr[20]; // Adjust size as needed
       sprintf(distanceStr, "%d", getLevenshteinDistance(EC->prefix, word));

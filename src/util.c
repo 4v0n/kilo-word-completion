@@ -2,7 +2,6 @@
 #include <ctype.h>
 #include <string.h>
 
-
 // Returns whether the char is an alphabet 
 bool isAlphabetChar(const char c) {
   int val;
@@ -15,6 +14,7 @@ bool isAlphabetChar(const char c) {
   return (val >= 0 && val < 26);
 }
 
+// Returns whether a string only contains alphabet characters
 bool isAlphabetWord(const char *w) {
   for (int i = 0; i < (int)strlen(w) - 1; i++) {
     if (!isAlphabetChar(w[i])) {
