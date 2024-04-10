@@ -45,7 +45,7 @@ An extension of the Kilo text editor to feature prefix and fuzzy match word comp
 To open a file using the text editor:
 
 ```bash
-    ./kilo [PATH TO FILE]
+  ./kilo [PATH TO FILE]
 ```
 ## Running Tests
 
