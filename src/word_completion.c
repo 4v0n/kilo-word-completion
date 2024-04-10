@@ -290,7 +290,7 @@ void updateEC() {
   struct editorConfig *E = getEditorConfig();
 
   // exit on null row
-  if (E->row == NULL) {
+  if (E->row == NULL || E->cy < 0 || E->cy >= E->numrows) {
     return;
   }
 

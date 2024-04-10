@@ -117,7 +117,7 @@ void editorUpdateSyntax(erow *row) {
   // initialise state variables
   int prev_sep = 1;
   int in_string = 0;
-  int in_comment = (row->idx > 0 && E->row[row->idx - 1].hl_open_comment);
+  int in_comment = (row->idx > 0 && E->row[row->idx - 1].hl_open_comment); // line 120
 
   int i = 0;
   while (i < row->rsize) {

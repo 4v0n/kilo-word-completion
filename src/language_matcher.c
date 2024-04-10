@@ -132,53 +132,49 @@ void LTfreeTrie(LangTrieNode *root) {
     }
   }
   free(root->shortcutExpansion);
-
-  // Free the root node after all its children have been freed
   free(root);
 }
 
 void LTdfs(LangTrieNode *root, List *suggestions, int *count, char *currentWord,
            int depth) {
-
   if (!root) {
     return;
   }
 
-  // shortcut
+  currentWord[depth] = '\0';
+
+  // Shortcut expansion
   if (root->shortcutExpansion != NULL) {
     Suggestion suggestion;
-    suggestion.word = (char *)malloc(strlen(root->shortcutExpansion) + 1);
-    suggestion.word = root->shortcutExpansion;
+    int expansionLength = strlen(root->shortcutExpansion);
+    suggestion.word = (char *)calloc(expansionLength + 1, sizeof(char));
+    strcpy(suggestion.word, root->shortcutExpansion);
     suggestion.weight = 2;
     addElement(suggestions, &suggestion, sizeof(suggestion));
-
     (*count)++;
   }
 
-  // word hit
+  // Word hit
   if (root->isEndOfWord) {
-    currentWord[depth] = '\0';
-
     Suggestion suggestion;
-    suggestion.word = (char *)malloc(strlen(currentWord) + 1);
-    suggestion.weight = 1;
+    int currentWordLength = strlen(currentWord);
+    suggestion.word = (char *)calloc(currentWordLength + 1, sizeof(char));
     strcpy(suggestion.word, currentWord);
-
+    suggestion.weight = 1;
     addElement(suggestions, &suggestion, sizeof(suggestion));
-
     (*count)++;
   }
 
-  // visit all children nodes
+  // Visit all children nodes
   for (int i = 0; i < 128; i++) {
     if (root->children[i]) {
-      currentWord[depth] = i;        // append current char to word
-      currentWord[depth + 1] = '\0'; // null terminate string
+      currentWord[depth] = i; // Append current char to word
       LTdfs(root->children[i], suggestions, count, currentWord, depth + 1);
-      currentWord[depth] = '\0'; // remove last char
+      currentWord[depth] = '\0'; // Reset the currentWord after recursion
     }
   }
 }
+
 
 /*** Language Matcher functions ***/
 
