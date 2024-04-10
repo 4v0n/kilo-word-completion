@@ -1,3 +1,8 @@
+/*
+  This file prototypes functions relating to 
+  prefix match word completion
+*/
+
 #ifndef PREFIX_MATCHER_H
 #define PREFIX_MATCHER_H
 

@@ -1,3 +1,8 @@
+/*
+  This file prototypes for functions relating to
+  Language word completion
+*/
+
 #ifndef LANGUAGE_MATCHER_H
 #define LANGUAGE_MATCHER_H
 

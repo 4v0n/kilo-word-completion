@@ -1,3 +1,8 @@
+/*
+  This function prototypes functions and defines structures
+  used by the word completion engine
+*/
+
 #ifndef WORD_COMPLETION_H
 #define WORD_COMPLETION_H
 

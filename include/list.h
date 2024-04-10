@@ -1,13 +1,21 @@
+/*
+  This file prototypes functions for and defines the structure
+  of a linked list.
+*/
+
 #ifndef LIST_H
 #define LIST_H
 
 #include <stdlib.h>
 
+// List node
 typedef struct Node {
   void *data;
   struct Node *next;
 } Node;
 
+
+// Structure containing a list
 typedef struct List {
   Node *head;
   int size;

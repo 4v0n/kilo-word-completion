@@ -1,3 +1,8 @@
+/*
+  This file prototypes functions relating to
+  fuzzy match word completion
+*/
+
 #ifndef LEVENSHTEIN_MATCHER_H
 #define LEVENSHTEIN_MATCHER_H
 

@@ -1,3 +1,7 @@
+/*
+  This file prototypes the Levenshtein Distance function
+*/
+
 #ifndef LEVENSHTEIN_H
 #define LEVENSHTEIN_H
 
