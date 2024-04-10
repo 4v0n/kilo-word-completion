@@ -1,4 +1,5 @@
 #include <data.h>
+#include <language_matcher.h>
 #include <levenshtein_matcher.h>
 #include <output.h>
 #include <prefix_matcher.h>
@@ -58,6 +59,8 @@ void drawVisualisation(struct abuf *ab) {
     visualiseLM(ab);
     break;
   case LANGUAGE:
+    visualiseLangM(ab);
+    break;
 
   default:
     fillRows(ab);

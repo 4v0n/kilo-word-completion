@@ -10,5 +10,6 @@ List *langGetSuggestions(const char *word);
 pairing getLanguagePairing(const char *word);
 bool initLangM();
 void destroyLangM();
+void visualiseLangM(struct abuf *ab);
 
 #endif
