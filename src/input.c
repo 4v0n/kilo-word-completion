@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <word_completion.h>
 #include <word_completion_visualisation.h>
+#include <stdio.h>
 
 /*** defines ***/
 #define CTRL_KEY(k) ((k) & 0x1f) // bitwise AND character with 00011111
@@ -169,8 +170,10 @@ void editorProcessKeypress() {
     }
 
     // clear screen and reposition cursor on quit
-    write(STDOUT_FILENO, "\x1b[2J", 4);
-    write(STDOUT_FILENO, "\x1b[H", 3);
+    if (write(STDOUT_FILENO, "\x1b[2J", 4) == -1)
+      perror("write error");
+    if (write(STDOUT_FILENO, "\x1b[H", 3) == -1)
+      perror("write error");
     exit(0);
     break;
 

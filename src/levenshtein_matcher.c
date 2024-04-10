@@ -63,20 +63,17 @@ void dfsLevenshtein(TrieNode *root, List *suggestions, int *count,
 
 char *getFirstHalf(const char *input) {
   int length = strlen(input);
-  int halfLength =
-      (length + 1) / 2; // +1 ensures a single char is copied entirely
+  int halfLength = (length + 1) / 2;  // +1 ensures a single char is copied entirely
 
-  // Allocate memory for the new string (+1 for the null terminator)
   char *firstHalf = (char *)malloc(halfLength + 1);
+  if (firstHalf == NULL) return NULL;  // Always good to check malloc return
 
-  // Copy the first half of the input to the new string
-  strncpy(firstHalf, input, halfLength);
-
-  // Ensure the new string is null-terminated
+  memcpy(firstHalf, input, halfLength);
   firstHalf[halfLength] = '\0';
 
   return firstHalf;
 }
+
 
 List *lmGetSuggestions(const char *word) {
   /*
@@ -105,7 +102,8 @@ List *lmGetSuggestions(const char *word) {
   char currentWord[100] = {0};
 
   // Use the lowercase prefix
-  strncpy(currentWord, lowerPrefix, strlen(lowerPrefix));
+  memcpy(currentWord, lowerPrefix, strlen(lowerPrefix));
+  currentWord[strlen(lowerPrefix)] = '\0';
 
   dfsLevenshtein(leaf, &suggestions, &count, currentWord, strlen(lowerPrefix),
                  lowerPrefix);

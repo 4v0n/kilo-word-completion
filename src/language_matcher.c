@@ -196,7 +196,8 @@ List *langGetSuggestions(const char *word) {
   char currentWord[100] = {0};
 
   // Use the lowercase prefix
-  strncpy(currentWord, word, strlen(word));
+  memcpy(currentWord, word, strlen(word));
+  currentWord[strlen(word)] = '\0';
 
   LTdfs(leaf, &suggestions, &count, currentWord, strlen(word));
   sortList(&suggestions, compareLT);

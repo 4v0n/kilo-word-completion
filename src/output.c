@@ -108,7 +108,7 @@ void drawTextRow(struct abuf *ab, int filerow) {
   if (len > E->screencols)
     len = E->screencols; // adjust for horizontal scroll
 
-  char *c = &E->row[filerow].render[E->coloff]; // render chars
+  char *c = &E->row[filerow].render[E->coloff];       // render chars
   unsigned char *hl = &E->row[filerow].hl[E->coloff]; // syntax highlight
   int current_colour = -1;
 
@@ -214,7 +214,7 @@ void editorDrawStatusBar(struct abuf *ab) {
     }
   }
   abAppend(ab, "\x1b[m", 3); // switch back to normal
-  abAppend(ab, "\r\n", 2); // newline
+  abAppend(ab, "\r\n", 2);   // newline
 }
 
 // Renders the editor's message bar
@@ -262,8 +262,15 @@ void editorRefreshScreen() {
 
   abAppend(&ab, "\x1b[?25h", 6); // show cursor
 
-  write(STDOUT_FILENO, ab.b, ab.len); // write buffer to standard output
-  abFree(&ab);                        // free buffer
+  ssize_t nbytes = write(STDOUT_FILENO, ab.b, ab.len);
+  if (nbytes != ab.len) {
+    perror("write failed");
+    // Consider handling the error more gracefully, adjust according to your
+    // needs
+    exit(1);
+  }
+
+  abFree(&ab); // free buffer
 }
 
 // Sets the editor's status message

@@ -20,7 +20,7 @@
 #define TAB_STOP 8
 #define QUIT_TIMES 1
 #define HELP_MESSAGE                                                           \
-  "HELP: Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find | Ctrl-H = show help"
+  "HELP: Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find | Ctrl-H = show help | Ctrl-O = word completion"
 
 // syntax highlighting bit flags
 #define HL_HIGHLIGHT_NUMBERS (1 << 0)
@@ -135,7 +135,7 @@ struct editorConfig {
   erow *row;      // row being edited - access with [cy]
   int dirty;      // whether file is changed
   char *filename;
-  char statusmsg[80];    // editor status message
+  char statusmsg[120];    // editor status message
   time_t statusmsg_time; // amount of time status message is visible
   struct editorSyntax *syntax;
   struct termios orig_termios;

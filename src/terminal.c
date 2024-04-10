@@ -27,8 +27,14 @@ struct editorConfig *getEditorConfig() { return &E; }
 // Prints an error message and exits the program
 void die(const char *s) {
   // clear screen and reposition cursor on exit
-  write(STDOUT_FILENO, "\x1b[2J", 4);
-  write(STDOUT_FILENO, "\x1b[H", 3);
+  if (write(STDOUT_FILENO, "\x1b[2J", 4) == -1) {
+    perror("write failed to clear screen");
+    exit(1);
+  }
+  if (write(STDOUT_FILENO, "\x1b[H", 3) == -1) {
+    perror("write failed to move cursor");
+    exit(1);
+  }
 
   perror(s); // prints a descriptive error message
   exit(1);   // exit program with status 1 - indicate failure

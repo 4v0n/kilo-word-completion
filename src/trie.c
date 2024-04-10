@@ -121,7 +121,8 @@ List *getSuggestions(TrieNode *root, const char *prefix) {
   char currentWord[100] = {0};
 
   // Use the lowercase prefix
-  strncpy(currentWord, lowerPrefix, strlen(lowerPrefix));
+  memcpy(currentWord, lowerPrefix, strlen(lowerPrefix));
+  currentWord[strlen(lowerPrefix)] = '\0';
 
   dfs(leaf, &suggestions, &count, currentWord, strlen(lowerPrefix));
   sortList(&suggestions, compare);

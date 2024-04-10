@@ -1,4 +1,6 @@
-CFLAGS = -Wall -Wextra -pedantic -std=c99 -g -Iinclude
+CFLAGS_COMMON = -Wall -Wextra -pedantic -std=c99 -Iinclude
+CFLAGS_DEBUG = $(CFLAGS_COMMON) -g
+CFLAGS_RELEASE = $(CFLAGS_COMMON) -O2
 
 SRCS = src/terminal.c \
       src/input.c \
@@ -22,10 +24,13 @@ TESTS = tests/test_trie.c \
         tests/test_list.c \
         tests/test_levenshtein.c
 
-.PHONY: main test clean
+.PHONY: main debug test clean
 
 main: $(SRCS) src/main.c | build
-	$(CC) $(CFLAGS) $^ -o build/kilo
+	$(CC) $(CFLAGS_RELEASE) $^ -o build/kilo
+
+debug: $(SRCS) src/main.c | build
+	$(CC) $(CFLAGS_DEBUG) $^ -o build/kilo_debug
 
 tests: $(SRCS) $(TESTS) tests/test_runner.c | build
 	$(CC) $(CFLAGS) $^ -o build/tests -I. -lcunit
@@ -34,4 +39,4 @@ build:
 	mkdir -p build
 
 clean:
-	rm -f build/tests build/kilo
+	rm -f build/tests build/kilo build/kilo_debug

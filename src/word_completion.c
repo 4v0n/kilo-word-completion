@@ -17,6 +17,7 @@
 #include <util.h>
 #include <word_completion.h>
 #include <word_completion_visualisation.h>
+#include <terminal.h>
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
@@ -264,7 +265,7 @@ void fillSuggestions(const char *word) {
     return;
   }
 
-  List *suggestions;
+  List *suggestions = NULL;
 
   switch (EC.mode) {
   case PREFIX:
@@ -275,6 +276,7 @@ void fillSuggestions(const char *word) {
     break;
   case LANGUAGE:
     suggestions = langGetSuggestions(word);
+    break;
   }
 
   if (suggestions) {
