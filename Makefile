@@ -1,6 +1,6 @@
 CFLAGS_COMMON = -Wall -Wextra -pedantic -std=c99 -Iinclude
 CFLAGS_DEBUG = $(CFLAGS_COMMON) -g
-CFLAGS_RELEASE = $(CFLAGS_COMMON) -O2
+CFLAGS_RELEASE = $(CFLAGS_COMMON)
 
 SRCS = src/terminal.c \
       src/input.c \

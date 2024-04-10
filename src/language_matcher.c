@@ -108,8 +108,7 @@ void LTinsertShortcut(LangTrieNode *root, const char *key,
   }
 
   // Allocate memory for the shortcut expansion and copy the string
-  int expansionLength =
-      strlen(expansion); // Include space for the null terminator
+  int expansionLength = strlen(expansion); // Include space for the null terminator
   pCrawl->shortcutExpansion = (char *)malloc(expansionLength * sizeof(char));
   if (pCrawl->shortcutExpansion) {
     // remove syntax highlight flag
@@ -118,6 +117,7 @@ void LTinsertShortcut(LangTrieNode *root, const char *key,
     }
 
     memcpy(pCrawl->shortcutExpansion, expansion, expansionLength);
+    pCrawl->shortcutExpansion[expansionLength] = '\0';
   }
 }
 
