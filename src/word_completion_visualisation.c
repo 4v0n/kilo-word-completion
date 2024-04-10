@@ -1,15 +1,14 @@
 #include <data.h>
+#include <levenshtein_matcher.h>
 #include <output.h>
+#include <prefix_matcher.h>
 #include <terminal.h>
 #include <word_completion.h>
 #include <word_completion_visualisation.h>
-#include <prefix_matcher.h>
 
 bool isActive = false;
 
-bool isVisualisationActive() {
-  return isActive;
-}
+bool isVisualisationActive() { return isActive; }
 
 void toggleVisualisation() {
   struct engineConfig *EC = getEngineConfig();
@@ -20,8 +19,9 @@ void toggleVisualisation() {
     return;
   }
 
-  if (E->screenrows < MAX_SUGGESTIONS*2) {
-    editorSetStatusMessage("Your current terminal is too small for visualisation!");
+  if (E->screenrows < MAX_SUGGESTIONS * 2) {
+    editorSetStatusMessage(
+        "Your current terminal is too small for visualisation!");
     return;
   }
 
@@ -42,25 +42,27 @@ void fillRows(struct abuf *ab) {
       abAppend(ab, " ", 1); // fill with spaces
       len++;
     }
-    abAppend(ab, "\r\n", 2);   // newline
+    abAppend(ab, "\r\n", 2); // newline
   }
 }
 
 void drawVisualisation(struct abuf *ab) {
   abAppend(ab, "\x1b[44m", 5);
-  
+
   struct engineConfig *EC = getEngineConfig();
   switch (EC->mode) {
-    case PREFIX:
-      visualisePM(ab);
-      break;
-    case FUZZY:
-    case LANGUAGE:
+  case PREFIX:
+    visualisePM(ab);
+    break;
+  case FUZZY:
+    visualiseLM(ab);
+    break;
+  case LANGUAGE:
 
-    default:
-      fillRows(ab);
-      editorSetStatusMessage("Failed to draw visualisation!");
-      break;
+  default:
+    fillRows(ab);
+    editorSetStatusMessage("Failed to draw visualisation!");
+    break;
   }
 
   abAppend(ab, "\x1b[m", 3); // switch back to normal
