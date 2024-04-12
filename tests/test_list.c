@@ -11,176 +11,198 @@ int compareIntegers(const Node *a, const Node *b) {
 }
 
 void testInitList() {
-  List list = *createList();
+  List *list = createList();
 
-  CU_ASSERT_EQUAL(list.head, NULL);
-  CU_ASSERT_EQUAL(list.size, 0);
+  CU_ASSERT_EQUAL(list->head, NULL);
+  CU_ASSERT_EQUAL(list->size, 0);
+
+  freeList(list);
 }
 
 void testAddInvalidElement() {
-  List list = *createList();
+  List *list = createList();
 
 
-  addElement(&list, NULL, sizeof(NULL));
+  addElement(list, NULL, sizeof(NULL));
 
-  CU_ASSERT_EQUAL(list.head, NULL);
-  CU_ASSERT_EQUAL(list.size, 0);
+  CU_ASSERT_EQUAL(list->head, NULL);
+  CU_ASSERT_EQUAL(list->size, 0);
+
+  freeList(list);
 }
 
 void testAddSingleElement() {
-  List list = *createList();
+  List *list = createList();
 
   int item = 2;
 
-  addElement(&list, &item, sizeof(item));
+  addElement(list, &item, sizeof(item));
 
-  CU_ASSERT_NOT_EQUAL(list.head, NULL);
-  CU_ASSERT_EQUAL(*(int*)list.head->data, item);
-  CU_ASSERT_EQUAL(list.size, 1);
+  CU_ASSERT_NOT_EQUAL(list->head, NULL);
+  CU_ASSERT_EQUAL(*(int*)list->head->data, item);
+  CU_ASSERT_EQUAL(list->size, 1);
+
+  freeList(list);
 }
 
 void testAddMultipleElements() {
-  List list = *createList();
+  List *list = createList();
 
   int item1 = 1;
   int item2 = 2;
 
-  addElement(&list, &item1, sizeof(item1));
-  addElement(&list, &item2, sizeof(item2));
+  addElement(list, &item1, sizeof(item1));
+  addElement(list, &item2, sizeof(item2));
 
-  CU_ASSERT_NOT_EQUAL(list.head, NULL);
-  CU_ASSERT_NOT_EQUAL(list.head->next, NULL);
+  CU_ASSERT_NOT_EQUAL(list->head, NULL);
+  CU_ASSERT_NOT_EQUAL(list->head->next, NULL);
 
-  CU_ASSERT_EQUAL(*(int*)list.head->data, item1);
-  CU_ASSERT_EQUAL(*(int*)list.head->next->data, item2);
+  CU_ASSERT_EQUAL(*(int*)list->head->data, item1);
+  CU_ASSERT_EQUAL(*(int*)list->head->next->data, item2);
 
-  CU_ASSERT_EQUAL(list.size, 2);
+  CU_ASSERT_EQUAL(list->size, 2);
+
+  freeList(list);
 }
 
 void testGetElement() {
-  List list = *createList();
+  List *list = createList();
 
 
   int item1 = 1;
   int item2 = 8;
 
-  addElement(&list, &item1, sizeof(item1));
-  addElement(&list, &item2, sizeof(item2));
+  addElement(list, &item1, sizeof(item1));
+  addElement(list, &item2, sizeof(item2));
 
-  CU_ASSERT_EQUAL(item1, *(int*)getListElement(&list, 0));
-  CU_ASSERT_EQUAL(item2, *(int*)getListElement(&list, 1));
+  CU_ASSERT_EQUAL(item1, *(int*)getListElement(list, 0));
+  CU_ASSERT_EQUAL(item2, *(int*)getListElement(list, 1));
+
+  freeList(list);
 }
 
 void testGetOutOfBoundsElement() {
-  List list = *createList();
+  List *list = createList();
 
   int item1 = 1;
   int item2 = 8;
 
-  addElement(&list, &item1, sizeof(item1));
-  addElement(&list, &item2, sizeof(item2));
+  addElement(list, &item1, sizeof(item1));
+  addElement(list, &item2, sizeof(item2));
 
-  CU_ASSERT_EQUAL(NULL, getListElement(&list, -1));
-  CU_ASSERT_EQUAL(NULL, getListElement(&list, 2));
+  CU_ASSERT_EQUAL(NULL, getListElement(list, -1));
+  CU_ASSERT_EQUAL(NULL, getListElement(list, 2));
+
+  freeList(list);
 }
 
 void testSortEmptyList() {
-  List list = *createList();
+  List *list = createList();
 
 
-  sortList(&list, compareIntegers);
+  sortList(list, compareIntegers);
 
-  CU_ASSERT_EQUAL(list.head, NULL);
-  CU_ASSERT_EQUAL(list.size, 0);
+  CU_ASSERT_EQUAL(list->head, NULL);
+  CU_ASSERT_EQUAL(list->size, 0);
+
+  freeList(list);
 }
 
 void testSortSingleElementList() {
-  List list = *createList();
+  List *list = createList();
 
 
   int item = 2;
-  addElement(&list, &item, sizeof(item));
+  addElement(list, &item, sizeof(item));
 
-  sortList(&list, compareIntegers);
+  sortList(list, compareIntegers);
 
-  CU_ASSERT_NOT_EQUAL(list.head, NULL);
-  CU_ASSERT_EQUAL(*(int*)list.head->data, item);
-  CU_ASSERT_EQUAL(list.size, 1);
+  CU_ASSERT_NOT_EQUAL(list->head, NULL);
+  CU_ASSERT_EQUAL(*(int*)list->head->data, item);
+  CU_ASSERT_EQUAL(list->size, 1);
+
+  freeList(list);
 }
 
 void testSortUnsortedList() {
-  List list = *createList();
+  List *list = createList();
 
 
   int items[] = {9, 3, 5, 7, 3, 2};
 
   for (int i = 0; i < 6; i++) {
-    addElement(&list, &items[i], sizeof(items[i]));
+    addElement(list, &items[i], sizeof(items[i]));
   }
 
-  sortList(&list, compareIntegers);
+  sortList(list, compareIntegers);
 
-  CU_ASSERT_NOT_EQUAL(list.head, NULL);
-  CU_ASSERT_NOT_EQUAL(list.head->next, NULL);
+  CU_ASSERT_NOT_EQUAL(list->head, NULL);
+  CU_ASSERT_NOT_EQUAL(list->head->next, NULL);
 
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 0), 2);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 1), 3);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 2), 3);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 3), 5);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 4), 7);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 5), 9);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 0), 2);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 1), 3);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 2), 3);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 3), 5);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 4), 7);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 5), 9);
 
-  CU_ASSERT_EQUAL(list.size, 6);
+  CU_ASSERT_EQUAL(list->size, 6);
+
+  freeList(list);
 }
 
 void testSortSortedList() {
-  List list = *createList();
+  List *list = createList();
 
 
   int items[] = {1, 2, 3, 4, 5, 6};
 
   for (int i = 0; i < 6; i++) {
-    addElement(&list, &items[i], sizeof(items[i]));
+    addElement(list, &items[i], sizeof(items[i]));
   }
 
-  sortList(&list, compareIntegers);
+  sortList(list, compareIntegers);
 
-  CU_ASSERT_NOT_EQUAL(list.head, NULL);
-  CU_ASSERT_NOT_EQUAL(list.head->next, NULL);
+  CU_ASSERT_NOT_EQUAL(list->head, NULL);
+  CU_ASSERT_NOT_EQUAL(list->head->next, NULL);
 
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 0), 1);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 1), 2);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 2), 3);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 3), 4);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 4), 5);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 5), 6);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 0), 1);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 1), 2);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 2), 3);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 3), 4);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 4), 5);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 5), 6);
 
-  CU_ASSERT_EQUAL(list.size, 6);
+  CU_ASSERT_EQUAL(list->size, 6);
+
+  freeList(list);
 }
 
 void testSortWithNullComparator() {
-  List list = *createList();
+  List *list = createList();
 
 
   int items[] = {9, 3, 5, 7, 3, 2};
 
   for (int i = 0; i < 6; i++) {
-    addElement(&list, &items[i], sizeof(items[i]));
+    addElement(list, &items[i], sizeof(items[i]));
   }
 
-  sortList(&list, NULL);
+  sortList(list, NULL);
 
-  CU_ASSERT_NOT_EQUAL(list.head, NULL);
-  CU_ASSERT_NOT_EQUAL(list.head->next, NULL);
+  CU_ASSERT_NOT_EQUAL(list->head, NULL);
+  CU_ASSERT_NOT_EQUAL(list->head->next, NULL);
 
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 0), 9);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 1), 3);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 2), 5);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 3), 7);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 4), 3);
-  CU_ASSERT_EQUAL(*(int*)getListElement(&list, 5), 2);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 0), 9);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 1), 3);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 2), 5);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 3), 7);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 4), 3);
+  CU_ASSERT_EQUAL(*(int*)getListElement(list, 5), 2);
 
-  CU_ASSERT_EQUAL(list.size, 6);
+  CU_ASSERT_EQUAL(list->size, 6);
+
+  freeList(list);
 }
 
 void testFreeEmptyList() {

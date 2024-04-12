@@ -144,6 +144,11 @@ void sortList(List *list, Comparator comp) {
 
 // Empties the list
 void emptyList(List *list) {
+
+  if (!list) {
+    return;
+  }
+
   Node *current = list->head;
   while (current != NULL) {
     Node *next = current->next;

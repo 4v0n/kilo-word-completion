@@ -176,6 +176,7 @@ void testGetLeaf() {
 void testSearchNonexistentWord() {
   List *suggestions = getSuggestions(root, "pro");
   CU_ASSERT_EQUAL(suggestions, NULL);
+  freeList(suggestions);
 }
 
 void testSearchInsertedWordLessThan5() {
@@ -194,6 +195,8 @@ void testSearchInsertedWordLessThan5() {
   CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 1), "api");
   CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 2), "apo");
   CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 3), "app");
+
+  freeList(suggestions);
 }
 
 void testSearchInsertedWordMoreThan5() {
@@ -215,12 +218,16 @@ void testSearchInsertedWordMoreThan5() {
   CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 2), "api");
   CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 3), "apo");
   CU_ASSERT_STRING_EQUAL((char *)getListElement(suggestions, 4), "app");
+
+  freeList(suggestions);
 }
 
 void testSearchNonExistentPrefix() {
   List *suggestions = getSuggestions(root, "ei");
 
   CU_ASSERT_EQUAL(suggestions, NULL);
+
+  freeList(suggestions);
 }
 
 void addTrieTests() {

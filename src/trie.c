@@ -66,11 +66,11 @@ TrieNode *getTrieLeaf(TrieNode *root, const char *prefix) {
   }
 
   int index = *prefix - 'a';
-  if (index < 0 || index >= ALPHABET_SIZE || root->children[index] == NULL) { 
+  if (index < 0 || index >= ALPHABET_SIZE || root->children[index] == NULL) {
     return NULL; // abort if out of bounds / not part of trie
   }
 
-  return getTrieLeaf(root->children[index], prefix + 1); 
+  return getTrieLeaf(root->children[index], prefix + 1);
 }
 
 // Uses DFS to return a list of words
@@ -126,7 +126,7 @@ List *getSuggestions(TrieNode *root, const char *prefix) {
   if (!leaf)
     return NULL;
 
-  List suggestions = *createList();
+  List *suggestions = createList();
   int count = 0;
   char currentWord[100] = {0};
 
@@ -134,19 +134,26 @@ List *getSuggestions(TrieNode *root, const char *prefix) {
   memcpy(currentWord, lowerPrefix, strlen(lowerPrefix));
   currentWord[strlen(lowerPrefix)] = '\0';
 
-  dfs(leaf, &suggestions, &count, currentWord, strlen(lowerPrefix));
-  sortList(&suggestions, compare);
+  dfs(leaf, suggestions, &count, currentWord, strlen(lowerPrefix));
+  sortList(suggestions, compare);
 
   List *result = createList();
   int numSuggestions = (count < MAX_SUGGESTIONS) ? count : MAX_SUGGESTIONS;
 
   for (int i = 0; i < numSuggestions; i++) {
-    Suggestion currentSuggestion =
-        *(Suggestion *)getListElement(&suggestions, i);
-    addElement(result, currentSuggestion.word,
-               strlen(currentSuggestion.word) + 1);
+    Suggestion *currentSuggestion =
+        (Suggestion *)getListElement(suggestions, i);
+    addElement(result, currentSuggestion->word,
+               strlen(currentSuggestion->word) + 1);
+    free(currentSuggestion->word);
   }
 
+  for (int i = numSuggestions; i < suggestions->size; i++) {
+    Suggestion *currentSuggestion = (Suggestion *)getListElement(suggestions, i);
+    free(currentSuggestion->word);
+  }
+
+  freeList(suggestions);
   return result;
 }
 
